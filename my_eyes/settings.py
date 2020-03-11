@@ -12,6 +12,13 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+#check if in prod
+if os.environ.get('PROD') == 'true':
+    PROD = True
+else:
+    PROD = False
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,10 +30,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'j_-3(f$78cmzj=cl@7xu&$kjo&%gb*v%=%&lr+uiqf*5zfw=!b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = not PROD
 
-ALLOWED_HOSTS = ['127.0.0.1','testserver',]
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -75,17 +81,20 @@ WSGI_APPLICATION = 'my_eyes.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'my_eyes',
-        'USER': 'root',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '',
+if PROD:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('DATABASENAME', ''),
+            'USER': os.environ.get('DATABASEUSER', ''),
+            'PASSWORD': os.environ.get('DATABASEPASSWORD', ''),
+            'HOST': os.environ.get('DATABASEHOST', ''),
+            'PORT': '3306',
+        }
     }
-}
+else:
+    from .mysql_settings import databases
+    DATABASES = databases
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -123,12 +132,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+if PROD:
+    STATICFILES_STORAGE = 'my_eyes.storage.PublicAzureStorage'
+else:
+    STATIC_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../static')
+
 STATIC_URL = '/static/'
 
-REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
-}
+SESSION_COOKIE_SECURE = PROD
+
+CSRF_COOKIE_SECURE = PROD
