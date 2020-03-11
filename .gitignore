@@ -1,3 +1,5 @@
-venv/
-.idea/*
+venv
+.idea
+__pycache__
 my_eyes/mysql_settings.py
+static
