@@ -132,7 +132,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-if not PROD:
+if PROD:
     STATICFILES_STORAGE = 'my_eyes.storage.PublicAzureStorage'
 else:
     STATIC_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../static')
