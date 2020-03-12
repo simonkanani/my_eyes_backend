@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
+from .models import Clinician, Patient
+import json
 
 import random
 import string
@@ -23,30 +26,39 @@ def generate_patient(request):
     return HttpResponse("Your random ID is: " + random_username + "<br/>Your random Password is: " + random_password)
 
 
-def register_patient(request):
+@csrf_exempt
+def add_patient(request):
     try:
         if request.method == 'POST':
             username = request.POST.__getitem__('username')
             password = request.POST.__getitem__('password')
-
             user = User.objects.create_user(username=username, password=password)
             user.save()
             return HttpResponse("User Successfully Registered!")
         else:
             return HttpResponse("Bad Request!")
     except Exception:
-        return HttpResponse("Error occurred! Please try again!" + Exception.__str__())
+        return HttpResponse("Error occurred! Please try again!")
 
-
+@csrf_exempt
 def login(request):
-    try:
-        if request.method == 'GET':
-            username = ''
-            password = ''
-
-            user = authenticate
-
+    # try:
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data['username']
+        password = data['password']
+        user = authenticate(username=username, password=password)
+        print(username + " " + password)
+        if user is not None:
+            if Clinician.objects.filter(user_id=user).exists():
+                return HttpResponse("Clinician")
+            elif Patient.objects.filter(user_id=user).exists():
+                return HttpResponse("Patient")
+            else:
+                return HttpResponse("Database Error - User does not have a User Type!")
         else:
-            return HttpResponse("Bad Request!")
-    except Exception:
-        return HttpResponse("Error occurred! Please try again!" + Exception.__str__())
+            return HttpResponse("Invalid Login")
+    else:
+        return HttpResponse("Bad Request!")
+    # except Exception:
+    #     return HttpResponse("Error occurred! Please try again!")

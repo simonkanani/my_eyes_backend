@@ -32,8 +32,10 @@ SECRET_KEY = 'j_-3(f$78cmzj=cl@7xu&$kjo&%gb*v%=%&lr+uiqf*5zfw=!b'
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.environ.get('DEBUG') == 'true':
     DEBUG = True
-else:
+elif PROD:
     DEBUG = False
+else:
+    DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -49,6 +51,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'my_eyes.urls'
@@ -145,3 +150,19 @@ STATIC_URL = '/static/'
 SESSION_COOKIE_SECURE = PROD
 
 CSRF_COOKIE_SECURE = PROD
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        #'rest_framework.authentication.TokenAuthentication'
+        'rest_framework.authentication.BasicAuthentication'
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated'
+    )
+}
+
+if not PROD:
+    CORS_ORIGIN_ALLOW_ALL = True
+
+

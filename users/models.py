@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+
 class Clinician(models.Model):
     user_id = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
 
