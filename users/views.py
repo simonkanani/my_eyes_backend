@@ -34,7 +34,13 @@ def add_patient(request):
             password = request.POST.__getitem__('password')
             user = User.objects.create_user(username=username, password=password)
             user.save()
-            return HttpResponse("User Successfully Registered!")
+
+            # clinician_id = request.POST.__getitem__('requestor')
+            # clinician = Clinician.objects.filter(user_id=clinician_id)
+            # patient = Patient(user_id=user, clinician=clinician)
+            # patient.save()
+
+            return HttpResponse("Patient Successfully Registered!")
         else:
             return HttpResponse("Bad Request!")
     except Exception:

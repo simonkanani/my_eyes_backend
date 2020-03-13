@@ -162,7 +162,4 @@ REST_FRAMEWORK = {
     )
 }
 
-if not PROD:
-    CORS_ORIGIN_ALLOW_ALL = True
-
-
+CORS_ORIGIN_ALLOW_ALL = True
