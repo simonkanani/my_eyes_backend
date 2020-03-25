@@ -1,5 +1,23 @@
 from django.contrib import admin
 
-from .models import Patient, Clinician
+from .models import Patient, Clinician, Preferences
 
-admin.site.register([Patient, Clinician])
+
+class PatientAdmin(admin.ModelAdmin):
+    list_display = ('id', 'username', 'password', 'younger_age_band', 'clinician')
+
+    def clinician(self, obj):
+        return obj.clinician_id
+
+    def username(self, obj):
+        return obj.user_id
+
+    def password(self, obj):
+        return obj.user_id.password
+
+    def id(self, obj):
+        return obj.user_id.id
+
+
+admin.site.register([Clinician, Preferences])
+admin.site.register(Patient, PatientAdmin)

@@ -1,53 +1,121 @@
-from django.shortcuts import render
 from django.contrib.auth.models import User
+from .models import Clinician, Patient, Preferences
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
-from .models import Clinician, Patient
-import json
-
-import random
-import string
-
-# Create your views here.
+import json, random, string
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, GenericAPIView, UpdateAPIView
+from users.serializers import PatientSerializer, PreferenceSerializer, PatientCreateSerializer, PatientGeneratorSerializer
+from django.db import transaction
+from rest_framework.response import Response
 
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the users index.")
+class ListPatientView(ListAPIView):
+    """
+    Lists all patients currently registered on the Application.
+    """
+
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
 
 
-def generate_patient(request):
-    random_username = ''.join(random.choices(string.digits + string.ascii_uppercase, k=5))
-    while User.objects.filter(username=random_username).exists():
-        random_username = ''.join(random.choices(string.digits + string.ascii_uppercase, k=5))
+class RegisterPatientView(CreateAPIView):
+    """
+    Registers a patient on the My Eyes Application.
+    """
+    serializer_class = PatientCreateSerializer
 
-    random_password = ''.join(random.choices(string.digits, k=6))
+    def create(self, request, *args, **kwargs):
+        try:
+            with transaction.atomic():
+                user_id = self.__generate_user(request)
+                response = self.__generate_patient(request, user_id)
+                self.__generate_preferences(response)
 
-    return HttpResponse("Your random ID is: " + random_username + "<br/>Your random Password is: " + random_password)
-
-
-@csrf_exempt
-def add_patient(request):
-    try:
-        if request.method == 'POST':
-            username = request.POST.__getitem__('username')
-            password = request.POST.__getitem__('password')
-            user = User.objects.create_user(username=username, password=password)
-            user.save()
-
-            # clinician_id = request.POST.__getitem__('requestor')
-            # clinician = Clinician.objects.filter(user_id=clinician_id)
-            # patient = Patient(user_id=user, clinician=clinician)
-            # patient.save()
-
-            return HttpResponse("Patient Successfully Registered!")
+        except Exception as e:
+            response = Response(e.__str__(), status=400)
         else:
-            return HttpResponse("Bad Request!")
-    except Exception:
-        return HttpResponse("Error occurred! Please try again!")
+            return response
+
+    def __generate_user(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = User.objects.create_user(username=username, password=password)
+        user.save()
+        return user.id
+
+    def __generate_patient(self, request, user_id):
+        request.data._mutable = True
+        request.data.update({'user_id': user_id})
+        serializer = PatientSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.object = serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(request.data, status=201,  headers=headers)
+
+    def __generate_preferences(self, response):
+        patient = Patient.objects.get(user_id=response.data.get('user_id'))
+        default_preferences = Preferences.objects.create(user_id=patient)
+        default_preferences.save()
+
+
+class PatientView(RetrieveAPIView):
+    """
+    Retrieve details about a single Patient
+    """
+
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
+    lookup_field = 'user_id'
+
+
+class PreferencesView(RetrieveAPIView):
+    """
+    Retrieve details about a single Patient's Preferences
+    """
+    queryset = Preferences.objects.all()
+    serializer_class = PreferenceSerializer
+    lookup_field = 'user_id'
+
+
+class UpdatePreferencesView(UpdateAPIView):
+    """
+    Update a single Patient's Preferences
+    """
+    queryset = Preferences.objects.all()
+    serializer_class = PreferenceSerializer
+    lookup_field = 'user_id'
+
+
+class GeneratePatientView(GenericAPIView):
+    """
+    Randomly generates 5-digit Username & 6-digit Password credentials for Patients, validating against existing Users to ensure there are no duplicated entries.
+    """
+
+    serializer_class = PatientGeneratorSerializer
+    queryset = User.objects.all()
+
+    def get(self, request):
+        try:
+            random_username = ''.join(random.choices(string.digits + string.ascii_uppercase, k=5))
+            while self.queryset.filter(username=random_username).exists():
+                random_username = ''.join(random.choices(string.digits + string.ascii_uppercase, k=5))
+            random_password = ''.join(random.choices(string.digits, k=6))
+
+            data = {'username': random_username, 'password': random_password}
+            serializer = PatientGeneratorSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+
+            return Response(serializer.data, status=201)
+        except Exception as e:
+            return Response(e.__str__(), status=400)
+
 
 @csrf_exempt
 def login(request):
+    """Authenticate via login"""
     # try:
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -66,5 +134,7 @@ def login(request):
             return HttpResponse("Invalid Login")
     else:
         return HttpResponse("Bad Request!")
-    # except Exception:
-    #     return HttpResponse("Error occurred! Please try again!")
+
+
+
+
