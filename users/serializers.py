@@ -6,7 +6,7 @@ class PatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ['user_id', 'younger_age_band', 'clinician_id']
+        fields = ['user_id', 'younger_age_band', 'clinician_id', 'part_1_is_active', 'part_2_is_active']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -23,6 +23,12 @@ class PatientCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = ['username', 'password', 'younger_age_band', 'clinician_id']
+
+
+class PatientActivateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Patient
+        fields = ['user_id', 'part_1_is_active', 'part_2_is_active']
 
 
 class UserSerializer(serializers.ModelSerializer):

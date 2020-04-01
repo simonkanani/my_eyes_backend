@@ -5,10 +5,11 @@ from rest_framework.authtoken import views as v
 
 urlpatterns = [
     path('login', views.login),
-    path('generate_patient', views.GeneratePatientView.as_view()),
-    path('register_patient', views.RegisterPatientView.as_view()),
-    path('list_patients', views.ListPatientView.as_view()),
-    path('<int:user_id>', views.PatientView.as_view()),
-    path('<int:user_id>/preferences/', views.PreferencesView.as_view()),
-    path('update_preferences/', views.UpdatePreferencesView.as_view())
+    path('generate_patient', views.PatientGenerateView.as_view()),
+    path('register_patient', views.PatientSaveView.as_view()),
+    path('list_patients', views.PatientListView.as_view()),
+    path('<int:user_id>', views.PatientRetrieveView.as_view()),
+    path('<int:user_id>/preferences', views.PreferencesRetrieveView.as_view()),
+    path('<int:user_id>/preferences/update', views.PreferencesUpdateView.as_view()),
+    path('<int:user_id>/activate', views.PatientActivateView.as_view())
 ]

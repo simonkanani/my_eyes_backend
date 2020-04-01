@@ -6,25 +6,28 @@ import collections
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = ['id', 'question', 'question_number', 'survey']
+        fields = ['id', 'question', 'question_number', 'survey_id']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['survey'] = instance.survey.name
+        data['survey'] = instance.survey_id.name
         return data
 
 
 class ResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Response
-        fields = ['patient', 'question', 'response']
+        fields = ['patient_id', 'question_id', 'response']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['question_desc'] = instance.question.question
-        data['response_desc'] = instance.get_response_key()
+        data['response_description'] = instance.get_response_key()
         data['time_stamp'] = instance.time_stamp
+        data['survey'] = instance.question_id.survey_id.name
+        data['question_number'] = instance.question_id.question_number
+        data.pop('question_id')
         return data
+
 
 
 class SurveySerializer(serializers.ModelSerializer):

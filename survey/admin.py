@@ -4,14 +4,14 @@ from .models import Survey, Question, Response, ResponseKey
 
 
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'survey', 'question_number', 'question')
+    list_display = ('id', 'survey_id', 'question_number', 'question')
 
 
 class ResponseAdmin(admin.ModelAdmin):
-    list_display = ('id', 'survey', 'question', 'patient_id', 'patient', 'answer', 'answer_description')
+    list_display = ('id', 'survey_id', 'question_id', 'patient_id', 'answer', 'answer_description')
 
-    def survey(self, obj):
-        return obj.question.survey
+    def survey_id(self, obj):
+        return obj.question_id.survey_id
 
     def answer(self, obj):
         return str(obj.response)
@@ -19,18 +19,18 @@ class ResponseAdmin(admin.ModelAdmin):
     def answer_description(self, obj):
         return obj.get_response_key()
 
-    def patient_id(self, obj):
-        return obj.patient.user_id.id
-
 
 class ResponseKeyAdmin(admin.ModelAdmin):
-    list_display = ('id', 'survey', 'answer', 'answer_key')
+    list_display = ('id', 'survey_id', 'answer_id', 'answer_key', 'answer_description')
 
-    def answer(self, obj):
+    def answer_id(self, obj):
         return str(obj.response)
 
     def answer_key(self, obj):
         return obj.response_key
+
+    def answer_description(self, obj):
+        return obj.get_response_key_display()
 
 
 admin.site.register([Survey])

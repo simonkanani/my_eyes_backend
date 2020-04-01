@@ -5,23 +5,39 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 import json, random, string
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, GenericAPIView, UpdateAPIView
-from users.serializers import PatientSerializer, PreferenceSerializer, PatientCreateSerializer, PatientGeneratorSerializer
+from users.serializers import *
 from django.db import transaction
 from rest_framework.response import Response
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 
-class ListPatientView(ListAPIView):
+class PatientGenerateView(GenericAPIView):
     """
-    Lists all patients currently registered on the Application.
+    Randomly generates 5-digit Username & 6-digit Password credentials for Patients, validating against existing Users to ensure there are no duplicated entries.
     """
 
-    queryset = Patient.objects.all()
-    serializer_class = PatientSerializer
+    serializer_class = PatientGeneratorSerializer
+    queryset = User.objects.all()
+
+    def get(self, request):
+        try:
+            random_username = ''.join(random.choices(string.digits + string.ascii_uppercase, k=5))
+            while self.queryset.filter(username=random_username).exists():
+                random_username = ''.join(random.choices(string.digits + string.ascii_uppercase, k=5))
+            random_password = ''.join(random.choices(string.digits, k=6))
+
+            data = {'username': random_username, 'password': random_password}
+            serializer = PatientGeneratorSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+
+            return Response(serializer.data, status=201)
+        except Exception as e:
+            return Response(e.__str__(), status=400)
 
 
-class RegisterPatientView(CreateAPIView):
+class PatientSaveView(CreateAPIView):
     """
-    Registers a patient on the My Eyes Application.
+    Registers a patient to the My Eyes Application.
     """
     serializer_class = PatientCreateSerializer
 
@@ -61,7 +77,7 @@ class RegisterPatientView(CreateAPIView):
         default_preferences.save()
 
 
-class PatientView(RetrieveAPIView):
+class PatientRetrieveView(RetrieveAPIView):
     """
     Retrieve details about a single Patient
     """
@@ -71,7 +87,39 @@ class PatientView(RetrieveAPIView):
     lookup_field = 'user_id'
 
 
-class PreferencesView(RetrieveAPIView):
+class PatientListView(ListAPIView):
+    """
+    Lists all patients currently registered on the Application.
+    """
+
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
+
+
+class PatientActivateView(UpdateAPIView):
+    """
+    Manually Activate or Deactivate a Patient's Part 1 or Part 2 Survey permissions
+    """
+    queryset = Patient.objects.all()
+    serializer_class = PatientActivateSerializer
+    lookup_field = 'user_id'
+
+    def put(self, request, *args, **kwargs):
+        user_id = self.kwargs['user_id']
+        try:
+            Patient.objects.get(user_id=user_id)
+            request_user_id = User.objects.get(id=request.data['user_id']).id
+            if user_id != request_user_id:
+                raise ValidationError("Inconsistent Request. Check User ID in URL against request JSON.")
+        except ObjectDoesNotExist as e:
+            return Response(e.__str__(), status=400)
+        except ValidationError as e:
+            return Response(e.__str__(), status=400)
+        else:
+            return self.partial_update(request, *args, **kwargs)
+
+
+class PreferencesRetrieveView(RetrieveAPIView):
     """
     Retrieve details about a single Patient's Preferences
     """
@@ -80,7 +128,7 @@ class PreferencesView(RetrieveAPIView):
     lookup_field = 'user_id'
 
 
-class UpdatePreferencesView(UpdateAPIView):
+class PreferencesUpdateView(UpdateAPIView):
     """
     Update a single Patient's Preferences
     """
@@ -88,29 +136,19 @@ class UpdatePreferencesView(UpdateAPIView):
     serializer_class = PreferenceSerializer
     lookup_field = 'user_id'
 
-
-class GeneratePatientView(GenericAPIView):
-    """
-    Randomly generates 5-digit Username & 6-digit Password credentials for Patients, validating against existing Users to ensure there are no duplicated entries.
-    """
-
-    serializer_class = PatientGeneratorSerializer
-    queryset = User.objects.all()
-
-    def get(self, request):
+    def put(self, request, *args, **kwargs):
+        user_id = self.kwargs['user_id']
         try:
-            random_username = ''.join(random.choices(string.digits + string.ascii_uppercase, k=5))
-            while self.queryset.filter(username=random_username).exists():
-                random_username = ''.join(random.choices(string.digits + string.ascii_uppercase, k=5))
-            random_password = ''.join(random.choices(string.digits, k=6))
-
-            data = {'username': random_username, 'password': random_password}
-            serializer = PatientGeneratorSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
-
-            return Response(serializer.data, status=201)
-        except Exception as e:
+            Patient.objects.get(user_id=user_id)
+            request_user_id = User.objects.get(id=request.data['user_id']).id
+            if user_id != request_user_id:
+                raise ValidationError("Inconsistent Request. Check User ID in URL against request JSON.")
+        except ObjectDoesNotExist as e:
             return Response(e.__str__(), status=400)
+        except ValidationError as e:
+            return Response(e.__str__(), status=400)
+        else:
+            return self.update(request, *args, **kwargs)
 
 
 @csrf_exempt

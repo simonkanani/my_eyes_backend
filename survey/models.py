@@ -11,8 +11,8 @@ class Survey(models.Model):
         return self.name
 
     def is_completed(self, patient):
-        questions = Question.objects.filter(survey=self)
-        responses = Response.objects.filter(question__survey=self, patient=patient)
+        questions = Question.objects.filter(survey_id=self)
+        responses = Response.objects.filter(question_id__survey_id=self, patient_id=patient)
 
         if questions.count() == responses.count():
             return True
@@ -20,7 +20,7 @@ class Survey(models.Model):
             return False
 
     def number_of_questions(self):
-        return Question.objects.filter(survey=self).count()
+        return Question.objects.filter(survey_id=self).count()
 
     def number_of_patients_completed(self):
         count = 0
@@ -32,15 +32,15 @@ class Survey(models.Model):
 
 
 class Question(models.Model):
+    survey_id = models.ForeignKey(Survey, on_delete=models.CASCADE, default=None)
     question_number = models.IntegerField()
     question = models.CharField(max_length=150)
-    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
         return self.question
 
     class Meta:
-        unique_together = ('question_number', 'survey')
+        unique_together = ('question_number', 'survey_id')
 
 
 class Response(models.Model):
@@ -51,19 +51,19 @@ class Response(models.Model):
         (4, 4),
     ]
 
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE, default=None)
+    question_id = models.ForeignKey(Question, on_delete=models.CASCADE)
     response = models.IntegerField(choices=RESPONSE_OPTIONS)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, default=None)
     time_stamp = models.DateTimeField(auto_now_add=True)
 
     def get_response_key(self):
-        return ResponseKey.objects.get(survey=self.question.survey, response=self.response).get_response_key_display()
+        return ResponseKey.objects.get(survey_id=self.question_id.survey_id, response=self.response).get_response_key_display()
 
     def survey_name(self):
         return self.question.survey.name
 
     class Meta:
-        unique_together = ('question', 'patient')
+        unique_together = ('question_id', 'patient_id')
 
 
 class ResponseKey(models.Model):
@@ -84,9 +84,9 @@ class ResponseKey(models.Model):
         ('E', 'EASY'),
         ('VE', 'VERY EASY'),
     ]
-    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    survey_id = models.ForeignKey(Survey, on_delete=models.CASCADE)
     response = models.IntegerField(choices=RESPONSE_OPTIONS)
     response_key = models.CharField(max_length=2, choices=RESPONSE_KEY_OPTIONS)
 
     class Meta:
-        unique_together = ('survey', 'response')
+        unique_together = ('survey_id', 'response')

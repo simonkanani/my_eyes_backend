@@ -20,7 +20,7 @@ class QuestionGetView(RetrieveAPIView):
     def get(self, request, survey_name, question_number):
         try:
             survey = Survey.objects.get(name=survey_name)
-            question = self.queryset.get(survey=survey, question_number=question_number)
+            question = self.queryset.get(survey_id=survey, question_number=question_number)
         except ObjectDoesNotExist:
             return r("Question does not exist",  status=404)
         else:
@@ -54,9 +54,9 @@ class ResponseGetView(RetrieveAPIView):
 
     def get(self, request, survey_name, question_number, patient_id):
         try:
-            survey = Survey.objects.get(name=survey_name)
-            question = Question.objects.get(survey=survey, question_number=question_number)
-            response = self.queryset.get(question=question, patient_id=patient_id)
+            survey_id = Survey.objects.get(name=survey_name)
+            question_id = Question.objects.get(survey_id=survey_id, question_number=question_number)
+            response = self.queryset.get(question_id=question_id, patient_id=patient_id)
         except ObjectDoesNotExist as e:
             return r(e.__str__(), status=404)
         else:
@@ -72,7 +72,7 @@ class ResponseListView(ListAPIView):
     def get_queryset(self):
         patient_id = self.kwargs['patient_id']
         survey_name = self.kwargs['survey_name']
-        return self.queryset.filter(patient__user_id_id=patient_id, question__survey__name=survey_name)
+        return self.queryset.filter(patient_id__user_id_id=patient_id, question_id__survey_id__name=survey_name)
 
     def list(self, *args, **kwargs):
         try:
@@ -99,6 +99,27 @@ class SurveyGetView(RetrieveAPIView):
         else:
             serializer = self.serializer_class(survey)
             return r(serializer.data, status=201)
+
+
+class QuestionListView(ListAPIView):
+    """Lists all Questions within a Survey"""
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+    def get_queryset(self):
+        survey_name = self.kwargs['survey_name']
+        return self.queryset.filter(survey_id__name=survey_name)
+
+    def list(self, *args, **kwargs):
+        try:
+            results = self.filter_queryset(self.get_queryset())
+            if not results:
+                raise ObjectDoesNotExist("No results found")
+            else:
+                serializer = self.get_serializer(results, many=True)
+                return r(serializer.data, status=200)
+        except ObjectDoesNotExist as e:
+            return r(e.__str__(), status=404)
 
 
 

@@ -15,6 +15,8 @@ class Patient(models.Model):
     user_id = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     clinician_id = models.ForeignKey(Clinician, null=True, on_delete=models.SET_NULL)
     younger_age_band = models.BooleanField()
+    part_1_is_active = models.BooleanField(default=True)
+    part_2_is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return "Patient #" + str(self.user_id)

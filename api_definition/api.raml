@@ -1,0 +1,387 @@
+#%RAML 1.0
+---
+title: My Eyes
+version: v0.1
+######################
+##### Resources #####
+######################
+
+/users:
+  /generate_patient:
+    get:
+      description: Randomly generates 5-digit Username & 6-digit Password credentials for Patients,
+                  validating against existing Users to ensure there are no duplicated entries.
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  'username': 'ABCDE',
+                  'password': '12345',
+                }
+        400:
+          body:
+            application/json:
+              example:
+                {
+                  'message': An error has occured!
+                }
+  /register_patient:
+    post:
+          description: Registers a patient to the My Eyes Application.
+          body:
+            application/json:
+              example:
+                {
+                  'username': 'ABCDE',
+                  'password': '12345',
+                  'younger_age_band': True,
+                  'clinician_id': 0
+                }
+          responses:
+            200:
+              body:
+                application/json:
+                  example:
+                    {
+                    'user_id': 1,
+                    'username': 'ABCDE',
+                    'password': '12345',
+                    'younger_age_band': True,
+                    'clinician_id': 0
+                    }
+            400:
+              body:
+                application/json:
+                  example:
+                    {
+                      'message': An error has occured!
+                    }
+  /list_patients:
+    get:
+      description: Lists all patients currently registered on the Application.
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                [
+                  {
+                    "user_id": 1,
+                    "username": "ABCDE",
+                    "password": "pbkdf2_sha256$180000$o40CJ8Bccr7a$iebL8aV6jfERIVw6zkmahR1OT3Z7lK++UaZh6+A0LHE="
+                    "younger_age_band": True,
+                    "clinician_id": 0,
+                    "part_1_is_active": True,
+                    "part_2_is_active": False,
+                  },
+                  {
+                    "user_id": 2,
+                    "username": "FGHIJ",
+                    "password": "pbkdf2_sha256$180000$o40CJ8Bccr7a$iebL8aV6jfERIVw6zkmahR1OT3Z7lK++UaZh6+A0LHE="
+                    "younger_age_band": False,
+                    "clinician_id": 3,
+                    "part_1_is_active": True,
+                    "part_2_is_active": True,
+                  }
+                ]
+        400:
+          body:
+            application/json:
+              example:
+                {
+                  'message': An error has occured!
+                }
+  /int:user_id:
+    get:
+      description: Retrieve details about a single Patient
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  "user_id": 1,
+                  "username": "ABCDE",
+                  "password": "pbkdf2_sha256$180000$o40CJ8Bccr7a$iebL8aV6jfERIVw6zkmahR1OT3Z7lK++UaZh6+A0LHE="
+                  "younger_age_band": True,
+                  "clinician_id": 0,
+                  "part_1_is_active": True,
+                  "part_2_is_active": False,
+                }
+        404:
+          body:
+            application/json:
+              example:
+                {
+                  'detail': 'Not found.'
+                }
+    /preferences:
+        get:
+          description: Retrieve details about a single Patient's Preferences
+          responses:
+            200:
+              body:
+                application/json:
+                  example:
+                    {
+                      "user_id": 0,
+                      "theme": 1,
+                      "haptic": True,
+                      "text_to_speech": False
+                    }
+            404:
+              body:
+                application/json:
+                  example:
+                    {
+                      'detail': 'Not found.'
+                    }
+    /preferences/update:
+      put:
+            description: Update a single Patient's Preferences
+            body:
+              application/json:
+                example:
+                  {
+                    'user_id': '0',
+                    'Themes': 1,
+                    'haptic': True,
+                    'text_to_speech': False
+                  }
+            responses:
+              200:
+                body:
+                  application/json:
+                    example:
+                      {
+                        'user_id': '0',
+                        'Themes': 1,
+                        'haptic': True,
+                        'text_to_speech': False
+                      }
+              400:
+                body:
+                  application/json:
+                    examples:
+                      example1:
+                        {
+                          'message': Inconsistent Request. Check User ID in URL against request JSON.
+                        }
+                      example2:
+                        {
+                          'message': Patient matching query does not exist.
+                        }
+    /activate:
+      post:
+            description: Manually Activate or Deactivate a Patient's Part 1 or Part 2 Survey permissions
+
+            body:
+              application/json:
+                example:
+                  {
+                    'user_id': '0',
+                    'part_1_is_active': True
+                    'part_1_is_active': False
+                  }
+            responses:
+              200:
+                body:
+                  application/json:
+                    example:
+                      {
+                        'user_id': '0',
+                        'part_1_is_active': True
+                        'part_1_is_active': False
+                      }
+              400:
+                body:
+                  application/json:
+                    examples:
+                      example1:
+                        {
+                          'message': Inconsistent Request. Check User ID in URL against request JSON.
+                        }
+                      example2:
+                        {
+                          'message': Patient matching query does not exist.
+                        }
+
+/survey:
+  /str:survey_name:
+    /summarize:
+      get:
+        description: Retreives summary data for a specific Survey
+        responses:
+          200:
+            body:
+              application/json:
+                example:
+                  {
+                    'id': 1,
+                    'name': VQoL_C,
+                    'Number of Questions': 1,
+                    'Patients Completed': 0
+                }
+          404:
+            body:
+              application/json:
+                example:
+                  {
+                    'message': Survey matching query does not exist.
+                  }
+    /all:
+      get:
+        description: Lists all Questions within a Survey
+        responses:
+          200:
+            body:
+              application/json:
+                example:
+                  [
+                    {
+                      'id': 1,
+                      'question': I make friends easily,
+                      'question_number': 1,
+                      'survey_id': 1,
+                      'survey': VQoL_C,
+                    },
+                    {
+                      'id': 2,
+                      'question': I keep friends easily,
+                      'question_number': 2,
+                      'survey_id': 1,
+                      'survey': VQoL_C,
+                    }
+                  ]
+          404:
+            body:
+              application/json:
+                example:
+                  {
+                    'message': No results found
+                  }
+    /int:question_number:
+      get:
+        description: Retrieve a single Question within a Survey
+        responses:
+          200:
+            body:
+              application/json:
+                example:
+                  {
+                      'id': 1,
+                      'survey_id': "VQoL_C",
+                      'question': "I make friends easily",
+                      'question_number': 1
+                  }
+          404:
+            body:
+              application/json:
+                example:
+                  {
+                    'message': Question Does Not Exist
+                  }
+  /int:patient_id/str:survey_name:
+    /int:question_number:
+      get:
+        description: Retreives a Patient's Response to a single Question within a Survey
+        responses:
+          200:
+            body:
+              application/json:
+                example:
+                  {
+                    'patient_id': 2,
+                    'survey': VQoL_C,
+                    'question_number': 2
+                    'response': 1,
+                    'response_description': "NOT AT ALL TRUE",
+                    'time_stamp': "2020-04-01T12:26:55.412666Z"
+                  }
+          404:
+            body:
+              application/json:
+                      examples:
+                        example1:
+                          {
+                            'message': Response matching query does not exist.
+                          }
+                        example2:
+                          {
+                            'message': Survey matching query does not exist.
+                          }
+                        example3:
+                          {
+                            'message': Question matching query does not exist.
+                          }
+    /all:
+      get:
+        description: Lists a Patient's response to all Questions within a Survey
+        responses:
+          200:
+            body:
+              application/json:
+                example:
+                  [
+                    {
+                      'patient_id': 2,
+                      'survey': VQoL_C,
+                      'question_number': 1,
+                      'response': 1,
+                      'response_description': "NOT AT ALL TRUE",
+                      'time_stamp': "2020-04-01T12:26:55.412666Z"
+                    },
+                    {
+                      'patient_id': 2,
+                      'survey': VQoL_C,
+                      'question_number': 2,
+                      'response': 2,
+                      'response_description': "A LITTLE BIT TRUE",
+                      'time_stamp': "2020-04-01T12:37:55.412666Z"
+                    }
+                  ]
+          404:
+            body:
+              application/json:
+                example:
+                  {
+                    'message': No results found
+                  }
+  /post_response:
+    post:
+      description: Registers a patient to the My Eyes Application.
+      body:
+        application/json:
+          example:
+            {
+              'patient_id': 1,
+              'question_id': 2,
+              'response': 3,
+            }
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  'patient_id': 2,
+                  'survey': VQoL_C,
+                  'question_number': 2,
+                  'response': 2,
+                  'response_description': "A LITTLE BIT TRUE",
+                  'time_stamp': "2020-04-01T12:37:55.412666Z"
+                }
+        400:
+          body:
+            application/json:
+              example:
+                {
+                  "non_field_errors":
+                    [
+                      "The fields question_id, patient_id must make a unique set."
+                    ]
+                }
+
+

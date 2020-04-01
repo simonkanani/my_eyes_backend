@@ -1,0 +1,332 @@
+<!DOCTYPE HTML><html><head><title>My Eyes API documentation</title><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="https://github.com/raml2html/raml2html 7.5.0"><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"><script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script><script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script><script type="text/javascript">
+      $(document).ready(function() {
+  $('.page-header pre code, .top-resource-description pre code, .modal-body pre code').each(function(i, block) {
+    hljs.highlightBlock(block);
+  });
+
+  $('[data-toggle]').click(function() {
+    var selector = $(this).data('target') + ' pre code';
+    $(selector).each(function(i, block) {
+      hljs.highlightBlock(block);
+    });
+  });
+
+  // open modal on hashes like #_action_get
+  $(window).bind('hashchange', function(e) {
+    var anchor_id = document.location.hash.substr(1); //strip #
+    var element = $('#' + anchor_id);
+
+    // do we have such element + is it a modal?  --> show it
+    if (element.length && element.hasClass('modal')) {
+      element.modal('show');
+    }
+  });
+
+  // execute hashchange on first page load
+  $(window).trigger('hashchange');
+
+  // remove url fragment on modal hide
+  $('.modal').on('hidden.bs.modal', function() {
+    try {
+      if (history && history.replaceState) {
+          history.replaceState({}, '', '#');
+      }
+    } catch(e) {}
+  });
+});
+    </script><style>
+      .hljs {
+  background: transparent;
+}
+.parent {
+  color: #999;
+}
+.list-group-item > .badge {
+  float: none;
+  margin-right: 6px;
+}
+.panel-title > .methods {
+  float: right;
+}
+.badge {
+  border-radius: 0;
+  text-transform: uppercase;
+  width: 70px;
+  font-weight: normal;
+  color: #f3f3f6;
+  line-height: normal;
+}
+.badge_get {
+  background-color: #63a8e2;
+}
+.badge_post {
+  background-color: #6cbd7d;
+}
+.badge_put {
+  background-color: #22bac4;
+}
+.badge_delete {
+  background-color: #d26460;
+}
+.badge_patch {
+  background-color: #ccc444;
+}
+.list-group,
+.panel-group {
+  margin-bottom: 0;
+}
+.panel-group .panel+.panel-white {
+  margin-top: 0;
+}
+.panel-group .panel-white {
+  border-bottom: 1px solid #F5F5F5;
+  border-radius: 0;
+}
+.panel-white:last-child {
+  border-bottom-color: white;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.panel-white .panel-heading {
+  background: white;
+}
+.tab-pane ul {
+  padding-left: 2em;
+}
+.tab-pane h1 {
+  font-size: 1.3em;
+}
+.tab-pane h2 {
+  font-size: 1.2em;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ddd;
+}
+.tab-pane h3 {
+  font-size: 1.1em;
+}
+.tab-content {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+#sidebar {
+  margin-top: 30px;
+  padding-right: 5px;
+  overflow: auto;
+  height: 90%;
+}
+.top-resource-description {
+  border-bottom: 1px solid #ddd;
+  background: #fcfcfc;
+  padding: 15px 15px 0 15px;
+  margin: -15px -15px 10px -15px;
+}
+.resource-description {
+  border-bottom: 1px solid #fcfcfc;
+  background: #fcfcfc;
+  padding: 15px 15px 0 15px;
+  margin: -15px -15px 10px -15px;
+}
+.resource-description p:last-child {
+  margin: 0;
+}
+.list-group .badge {
+  float: left;
+}
+.method_description {
+  margin-left: 85px;
+}
+.method_description p:last-child {
+  margin: 0;
+}
+.list-group-item {
+  cursor: pointer;
+}
+.list-group-item:hover {
+  background-color: #f5f5f5;
+}
+pre code {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}
+.items {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.42857143;
+}
+.examples {
+  margin-left: 0.5em;
+}
+.resource-modal li > ul {
+  margin-bottom: 1em;
+}
+.required {
+  color: #f00;
+}
+    </style></head><body data-spy="scroll" data-target="#sidebar"><div class="container"><div class="row"><div class="col-md-9" role="main"><div class="page-header"><h1>My Eyes API documentation <small>version v0.1</small></h1><p></p></div><div class="panel panel-default"><div class="panel-heading"><h3 id="users" class="panel-title">/users</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_users_generate_patient"><span class="parent">/users</span>/generate_patient</a> <span class="methods"><a href="#users_generate_patient_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_users_generate_patient" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#users_generate_patient_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Randomly generates 5-digit Username &amp; 6-digit Password credentials for Patients, validating against existing Users to ensure there are no duplicated entries.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="users_generate_patient_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/users</span>/generate_patient</h4></div><div class="modal-body"><div class="alert alert-info"><p>Randomly generates 5-digit Username &amp; 6-digit Password credentials for Patients, validating against existing Users to ensure there are no duplicated entries.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#users_generate_patient_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="users_generate_patient_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "username": "ABCDE",
+  "password": "12345"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "An error has occured!"
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_users_register_patient"><span class="parent">/users</span>/register_patient</a> <span class="methods"><a href="#users_register_patient_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_users_register_patient" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#users_register_patient_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Registers a patient to the My Eyes Application.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="users_register_patient_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent">/users</span>/register_patient</h4></div><div class="modal-body"><div class="alert alert-info"><p>Registers a patient to the My Eyes Application.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#users_register_patient_post_request" data-toggle="tab">Request</a></li><li><a href="#users_register_patient_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="users_register_patient_post_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "username": "ABCDE",
+  "password": "12345",
+  "younger_age_band": "True",
+  "clinician_id": 0
+}</code></pre></div></div><div class="tab-pane" id="users_register_patient_post_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "user_id": 1,
+  "username": "ABCDE",
+  "password": "12345",
+  "younger_age_band": "True",
+  "clinician_id": 0
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "An error has occured!"
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_users_list_patients"><span class="parent">/users</span>/list_patients</a> <span class="methods"><a href="#users_list_patients_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_users_list_patients" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#users_list_patients_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Lists all patients currently registered on the Application.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="users_list_patients_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/users</span>/list_patients</h4></div><div class="modal-body"><div class="alert alert-info"><p>Lists all patients currently registered on the Application.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#users_list_patients_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="users_list_patients_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+  {
+    "user_id": 1,
+    "username": "ABCDE",
+    "password": "pbkdf2_sha256$180000$o40CJ8Bccr7a$iebL8aV6jfERIVw6zkmahR1OT3Z7lK++UaZh6+A0LHE=",
+    "younger_age_band\"": "True",
+    "clinician_id": 0,
+    "part_1_is_active": "True",
+    "part_2_is_active": "False"
+  },
+  {
+    "user_id": 2,
+    "username": "FGHIJ",
+    "password": "pbkdf2_sha256$180000$o40CJ8Bccr7a$iebL8aV6jfERIVw6zkmahR1OT3Z7lK++UaZh6+A0LHE=",
+    "younger_age_band\"": "False",
+    "clinician_id": 3,
+    "part_1_is_active": "True",
+    "part_2_is_active": "True"
+  }
+]</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "An error has occured!"
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_users_int_user_id"><span class="parent">/users</span>/int:user_id</a> <span class="methods"><a href="#users_int_user_id_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_users_int_user_id" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#users_int_user_id_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve details about a single Patient</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="users_int_user_id_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/users</span>/int:user_id</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve details about a single Patient</p></div><ul class="nav nav-tabs"><li class="active"><a href="#users_int_user_id_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="users_int_user_id_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "user_id": 1,
+  "username": "ABCDE",
+  "password": "pbkdf2_sha256$180000$o40CJ8Bccr7a$iebL8aV6jfERIVw6zkmahR1OT3Z7lK++UaZh6+A0LHE=",
+  "younger_age_band\"": "True",
+  "clinician_id": 0,
+  "part_1_is_active": "True",
+  "part_2_is_active": "False"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "detail": "Not found."
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_users_int_user_id_preferences"><span class="parent">/users/int:user_id</span>/preferences</a> <span class="methods"><a href="#users_int_user_id_preferences_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_users_int_user_id_preferences" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#users_int_user_id_preferences_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve details about a single Patient&#39;s Preferences</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="users_int_user_id_preferences_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/users/int:user_id</span>/preferences</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve details about a single Patient&#39;s Preferences</p></div><ul class="nav nav-tabs"><li class="active"><a href="#users_int_user_id_preferences_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="users_int_user_id_preferences_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "user_id": 0,
+  "theme": 1,
+  "haptic": "True",
+  "text_to_speech": "False"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "detail": "Not found."
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_users_int_user_id_preferences_update"><span class="parent">/users/int:user_id</span>/preferences/update</a> <span class="methods"><a href="#users_int_user_id_preferences_update_put"><span class="badge badge_put">put</span></a></span></h4></div><div id="panel_users_int_user_id_preferences_update" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#users_int_user_id_preferences_update_put'" class="list-group-item"><span class="badge badge_put">put</span><div class="method_description"><p>Update a single Patient&#39;s Preferences</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="users_int_user_id_preferences_update_put"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_put">put</span> <span class="parent">/users/int:user_id</span>/preferences/update</h4></div><div class="modal-body"><div class="alert alert-info"><p>Update a single Patient&#39;s Preferences</p></div><ul class="nav nav-tabs"><li class="active"><a href="#users_int_user_id_preferences_update_put_request" data-toggle="tab">Request</a></li><li><a href="#users_int_user_id_preferences_update_put_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="users_int_user_id_preferences_update_put_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "user_id": "0",
+  "Themes": 1,
+  "haptic": "True",
+  "text_to_speech": "False"
+}</code></pre></div></div><div class="tab-pane" id="users_int_user_id_preferences_update_put_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "user_id": "0",
+  "Themes": 1,
+  "haptic": "True",
+  "text_to_speech": "False"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Examples</strong>:</p><div class="examples"><p><strong>example1</strong>:<br></p><pre><code>{
+  "message": "Inconsistent Request. Check User ID in URL against request JSON."
+}</code></pre><p><strong>example2</strong>:<br></p><pre><code>{
+  "message": "Patient matching query does not exist."
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_users_int_user_id_activate"><span class="parent">/users/int:user_id</span>/activate</a> <span class="methods"><a href="#users_int_user_id_activate_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_users_int_user_id_activate" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#users_int_user_id_activate_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Manually Activate or Deactivate a Patient&#39;s Part 1 or Part 2 Survey permissions</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="users_int_user_id_activate_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent">/users/int:user_id</span>/activate</h4></div><div class="modal-body"><div class="alert alert-info"><p>Manually Activate or Deactivate a Patient&#39;s Part 1 or Part 2 Survey permissions</p></div><ul class="nav nav-tabs"><li class="active"><a href="#users_int_user_id_activate_post_request" data-toggle="tab">Request</a></li><li><a href="#users_int_user_id_activate_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="users_int_user_id_activate_post_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "user_id": "0",
+  "part_1_is_active": "True &#39;part_1_is_active&#39;",
+  "alse": null
+}</code></pre></div></div><div class="tab-pane" id="users_int_user_id_activate_post_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "user_id": "0",
+  "part_1_is_active": "True &#39;part_1_is_active&#39;",
+  "alse": null
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Examples</strong>:</p><div class="examples"><p><strong>example1</strong>:<br></p><pre><code>{
+  "message": "Inconsistent Request. Check User ID in URL against request JSON."
+}</code></pre><p><strong>example2</strong>:<br></p><pre><code>{
+  "message": "Patient matching query does not exist."
+}</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="survey" class="panel-title">/survey</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_survey_str_survey_name_summarize"><span class="parent">/survey/str:survey_name</span>/summarize</a> <span class="methods"><a href="#survey_str_survey_name_summarize_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_survey_str_survey_name_summarize" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#survey_str_survey_name_summarize_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retreives summary data for a specific Survey</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="survey_str_survey_name_summarize_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/survey/str:survey_name</span>/summarize</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retreives summary data for a specific Survey</p></div><ul class="nav nav-tabs"><li class="active"><a href="#survey_str_survey_name_summarize_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="survey_str_survey_name_summarize_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "id": 1,
+  "name": "VQoL_C",
+  "Number of Questions": 1,
+  "Patients Completed": 0
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Survey matching query does not exist."
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_survey_str_survey_name_all"><span class="parent">/survey/str:survey_name</span>/all</a> <span class="methods"><a href="#survey_str_survey_name_all_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_survey_str_survey_name_all" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#survey_str_survey_name_all_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Lists all Questions within a Survey</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="survey_str_survey_name_all_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/survey/str:survey_name</span>/all</h4></div><div class="modal-body"><div class="alert alert-info"><p>Lists all Questions within a Survey</p></div><ul class="nav nav-tabs"><li class="active"><a href="#survey_str_survey_name_all_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="survey_str_survey_name_all_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+  {
+    "id": 1,
+    "question": "I make friends easily",
+    "question_number": 1,
+    "survey_id": 1,
+    "survey": "VQoL_C"
+  },
+  {
+    "id": 2,
+    "question": "I keep friends easily",
+    "question_number": 2,
+    "survey_id": 1,
+    "survey": "VQoL_C"
+  }
+]</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "No results found"
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_survey_str_survey_name_int_question_number"><span class="parent">/survey/str:survey_name</span>/int:question_number</a> <span class="methods"><a href="#survey_str_survey_name_int_question_number_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_survey_str_survey_name_int_question_number" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#survey_str_survey_name_int_question_number_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve a single Question within a Survey</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="survey_str_survey_name_int_question_number_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/survey/str:survey_name</span>/int:question_number</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve a single Question within a Survey</p></div><ul class="nav nav-tabs"><li class="active"><a href="#survey_str_survey_name_int_question_number_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="survey_str_survey_name_int_question_number_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "id": 1,
+  "survey_id": "VQoL_C",
+  "question": "I make friends easily",
+  "question_number": 1
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Question Does Not Exist"
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_survey_int_patient_id_str_survey_name_int_question_number"><span class="parent">/survey/int:patient_id/str:survey_name</span>/int:question_number</a> <span class="methods"><a href="#survey_int_patient_id_str_survey_name_int_question_number_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_survey_int_patient_id_str_survey_name_int_question_number" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#survey_int_patient_id_str_survey_name_int_question_number_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retreives a Patient&#39;s Response to a single Question within a Survey</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="survey_int_patient_id_str_survey_name_int_question_number_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/survey/int:patient_id/str:survey_name</span>/int:question_number</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retreives a Patient&#39;s Response to a single Question within a Survey</p></div><ul class="nav nav-tabs"><li class="active"><a href="#survey_int_patient_id_str_survey_name_int_question_number_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="survey_int_patient_id_str_survey_name_int_question_number_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "patient_id": 2,
+  "survey": "VQoL_C",
+  "question_number": "2 &#39;response&#39;",
+  "response_description": "NOT AT ALL TRUE",
+  "time_stamp": "2020-04-01T12:26:55.412666Z"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Examples</strong>:</p><div class="examples"><p><strong>example1</strong>:<br></p><pre><code>{
+  "message": "Response matching query does not exist."
+}</code></pre><p><strong>example2</strong>:<br></p><pre><code>{
+  "message": "Survey matching query does not exist."
+}</code></pre><p><strong>example3</strong>:<br></p><pre><code>{
+  "message": "Question matching query does not exist."
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_survey_int_patient_id_str_survey_name_all"><span class="parent">/survey/int:patient_id/str:survey_name</span>/all</a> <span class="methods"><a href="#survey_int_patient_id_str_survey_name_all_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_survey_int_patient_id_str_survey_name_all" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#survey_int_patient_id_str_survey_name_all_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Lists a Patient&#39;s response to all Questions within a Survey</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="survey_int_patient_id_str_survey_name_all_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/survey/int:patient_id/str:survey_name</span>/all</h4></div><div class="modal-body"><div class="alert alert-info"><p>Lists a Patient&#39;s response to all Questions within a Survey</p></div><ul class="nav nav-tabs"><li class="active"><a href="#survey_int_patient_id_str_survey_name_all_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="survey_int_patient_id_str_survey_name_all_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+  {
+    "patient_id": 2,
+    "survey": "VQoL_C",
+    "question_number": 1,
+    "response": 1,
+    "response_description": "NOT AT ALL TRUE",
+    "time_stamp": "2020-04-01T12:26:55.412666Z"
+  },
+  {
+    "patient_id": 2,
+    "survey": "VQoL_C",
+    "question_number": 2,
+    "response": 2,
+    "response_description": "A LITTLE BIT TRUE",
+    "time_stamp": "2020-04-01T12:37:55.412666Z"
+  }
+]</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "No results found"
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_survey_post_response"><span class="parent">/survey</span>/post_response</a> <span class="methods"><a href="#survey_post_response_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_survey_post_response" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#survey_post_response_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Registers a patient to the My Eyes Application.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="survey_post_response_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent">/survey</span>/post_response</h4></div><div class="modal-body"><div class="alert alert-info"><p>Registers a patient to the My Eyes Application.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#survey_post_response_post_request" data-toggle="tab">Request</a></li><li><a href="#survey_post_response_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="survey_post_response_post_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "patient_id": 1,
+  "question_id": 2,
+  "response": 3
+}</code></pre></div></div><div class="tab-pane" id="survey_post_response_post_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "patient_id": 2,
+  "survey": "VQoL_C",
+  "question_number": 2,
+  "response": 2,
+  "response_description": "A LITTLE BIT TRUE",
+  "time_stamp": "2020-04-01T12:37:55.412666Z"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "non_field_errors": [
+    "The fields question_id, patient_id must make a unique set."
+  ]
+}</code></pre></div></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#users">/users</a></li><li><a href="#survey">/survey</a></li></ul></div></div></div></div></body></html>
