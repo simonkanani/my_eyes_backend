@@ -29,7 +29,6 @@ class ResponseSerializer(serializers.ModelSerializer):
         return data
 
 
-
 class SurveySerializer(serializers.ModelSerializer):
     class Meta:
         model = Survey
@@ -43,4 +42,10 @@ class SurveySerializer(serializers.ModelSerializer):
         data['Patients Completed'] = instance.number_of_patients_completed()
         return data
 
+
+class PatientSurveySerializer(serializers.Serializer):
+    survey_name = serializers.CharField()
+    patient_id = serializers.IntegerField()
+    number_of_questions = serializers.IntegerField()
+    answered = serializers.IntegerField()
 

@@ -1,6 +1,4 @@
 from django.contrib.auth.models import User
-from .models import Clinician, Patient, Preferences
-from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 import json, random, string
@@ -9,6 +7,7 @@ from users.serializers import *
 from django.db import transaction
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.http import HttpResponse, JsonResponse
 
 
 class PatientGenerateView(GenericAPIView):
@@ -154,25 +153,23 @@ class PreferencesUpdateView(UpdateAPIView):
 @csrf_exempt
 def login(request):
     """Authenticate via login"""
-    # try:
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        username = data['username']
-        password = data['password']
-        user = authenticate(username=username, password=password)
-        print(username + " " + password)
-        if user is not None:
-            if Clinician.objects.filter(user_id=user).exists():
-                return HttpResponse("Clinician")
-            elif Patient.objects.filter(user_id=user).exists():
-                return HttpResponse("Patient")
+    try:
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            username = data['username']
+            password = data['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                serializer = UserSerializer(user)
+                if serializer.data['user_type'] == 'Clinician' or serializer.data['user_type'] == 'Patient':
+                    return JsonResponse(serializer.data, status=200)
+                else:
+                    return JsonResponse('Invalid user_type', status=400, safe=False)
             else:
-                return HttpResponse("Database Error - User does not have a User Type!")
+                return JsonResponse('Invalid Login Details', status=400, safe=False)
         else:
-            return HttpResponse("Invalid Login")
-    else:
-        return HttpResponse("Bad Request!")
-
-
+            return JsonResponse('Bad Request: ' + request.method, status=400, safe=False)
+    except Exception as e:
+        return JsonResponse(e.__str__(), status=404, safe=False)
 
 

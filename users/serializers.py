@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Patient, User, Preferences
+from .models import Patient, User, Preferences, Clinician
 
 
 class PatientSerializer(serializers.ModelSerializer):
@@ -34,8 +34,20 @@ class PatientActivateSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'is_Patient', 'is_Clinician']
+        fields = ['id', 'username', 'password']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if Clinician.objects.filter(user_id=instance.id).exists():
+            data['user_type'] = 'Clinician'
+            data.pop('password')
+        elif Patient.objects.filter(user_id=instance.id).exists():
+            data['user_type'] = 'Patient'
+            data.pop('password')
+        else:
+            data['user_type'] = 'Other'
+            data.pop('password')
+        return data
 
 class PreferenceSerializer(serializers.ModelSerializer):
     class Meta:

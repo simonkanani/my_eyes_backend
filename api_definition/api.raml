@@ -182,8 +182,8 @@ version: v0.1
                 example:
                   {
                     'user_id': '0',
-                    'part_1_is_active': True
-                    'part_1_is_active': False
+                    'part_1_is_active': True,
+                    'part_2_is_active': False
                   }
             responses:
               200:
@@ -192,8 +192,8 @@ version: v0.1
                     example:
                       {
                         'user_id': '0',
-                        'part_1_is_active': True
-                        'part_1_is_active': False
+                        'part_1_is_active': True,
+                        'part_2_is_active': False
                       }
               400:
                 body:
@@ -207,6 +207,34 @@ version: v0.1
                         {
                           'message': Patient matching query does not exist.
                         }
+  /login:
+    post:
+      description: Authenticates User details using Basic Authentication
+      body:
+        application/json:
+          example:
+            {
+              'username' : ABCDE,
+              'password': 12345
+            }
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  'id':0
+                  'username': ABCDE,
+                  'password': 12345,
+                  'user_type': Patient
+                }
+        400:
+          body:
+            application/json:
+              example:
+                {
+                  'message': Invalid Login Details
+                }
 
 /survey:
   /str:survey_name:
@@ -349,6 +377,29 @@ version: v0.1
                   {
                     'message': No results found
                   }
+    /summarize:
+      get:
+        description: Returns details for a single Survey for a single Patient
+        responses:
+          200:
+            body:
+              application/json:
+                example:
+                  {
+                    "survey_name": "Survey_Name",
+                    "patient_id": 0,
+                    "number_of_questions": 30,
+                    "answered": 10
+                  }
+          404:
+            body:
+              application/json:
+                example:
+                  {
+                    'message': Survey matching query does not exist
+                  }
+
+
   /post_response:
     post:
       description: Registers a patient to the My Eyes Application.

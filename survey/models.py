@@ -10,17 +10,18 @@ class Survey(models.Model):
     def __str__(self):
         return self.name
 
-    def is_completed(self, patient):
-        questions = Question.objects.filter(survey_id=self)
-        responses = Response.objects.filter(question_id__survey_id=self, patient_id=patient)
+    def number_of_questions(self):
+        return Question.objects.filter(survey_id=self).count()
 
-        if questions.count() == responses.count():
+    def responses_submitted(self, patient):
+        responses = Response.objects.filter(question_id__survey_id=self, patient_id=patient)
+        return responses.count()
+
+    def is_completed(self, patient):
+        if self.number_of_questions() == self.responses_submitted(patient):
             return True
         else:
             return False
-
-    def number_of_questions(self):
-        return Question.objects.filter(survey_id=self).count()
 
     def number_of_patients_completed(self):
         count = 0

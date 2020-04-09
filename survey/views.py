@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.generics import RetrieveAPIView, CreateAPIView, ListAPIView
 from survey.models import Survey, Question, Response
-from survey.serializers import SurveySerializer, QuestionSerializer, ResponseSerializer
+from survey.serializers import SurveySerializer, QuestionSerializer, ResponseSerializer, PatientSurveySerializer
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response as r
 from rest_framework import viewsets
@@ -99,6 +99,31 @@ class SurveyGetView(RetrieveAPIView):
         else:
             serializer = self.serializer_class(survey)
             return r(serializer.data, status=201)
+
+
+class PatientSurveyGetView(RetrieveAPIView):
+    """Returns details for a single Survey for a single Patient"""
+    queryset = Survey.objects.all()
+    serializer_class = PatientSurveySerializer
+
+    def get(self, request, patient_id, survey_name):
+        try:
+            survey = Survey.objects.get(name=survey_name)
+            patient = Patient.objects.get(user_id=patient_id)
+            data = {
+                'survey_name': survey.name,
+                'patient_id': patient.user_id.id,
+                'number_of_questions': survey.number_of_questions(),
+                'answered': survey.responses_submitted(patient)
+            }
+        except ObjectDoesNotExist as e:
+            return r(e.__str__(), status=404)
+        else:
+            serializer = self.serializer_class(data=data)
+            if serializer.is_valid():
+                return r(serializer.data, status=200)
+            else:
+                return r(data, status=404)
 
 
 class QuestionListView(ListAPIView):
