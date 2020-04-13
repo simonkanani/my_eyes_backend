@@ -17,7 +17,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 class ResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Response
-        fields = ['patient_id', 'question_id', 'response']
+        fields = ['patient_id', 'question_id', 'response', 'attempt_number']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -25,6 +25,7 @@ class ResponseSerializer(serializers.ModelSerializer):
         data['time_stamp'] = instance.time_stamp
         data['survey'] = instance.question_id.survey_id.name
         data['question_number'] = instance.question_id.question_number
+        data['attempt_number'] = instance.attempt_number
         data.pop('question_id')
         return data
 
@@ -40,6 +41,7 @@ class SurveySerializer(serializers.ModelSerializer):
         data['name'] = instance.name
         data['Number of Questions'] = instance.number_of_questions()
         data['Patients Completed'] = instance.number_of_patients_completed()
+        data['Number of Attempts'] = instance.number_of_attempts()
         return data
 
 

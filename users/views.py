@@ -86,13 +86,15 @@ class PatientRetrieveView(RetrieveAPIView):
     lookup_field = 'user_id'
 
 
-class PatientListView(ListAPIView):
+class PatientSearchView(RetrieveAPIView):
     """
     Lists all patients currently registered on the Application.
     """
 
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
+    lookup_field = 'user_id__username'
+
 
 
 class PatientActivateView(UpdateAPIView):
@@ -104,18 +106,18 @@ class PatientActivateView(UpdateAPIView):
     lookup_field = 'user_id'
 
     def put(self, request, *args, **kwargs):
-        user_id = self.kwargs['user_id']
         try:
-            Patient.objects.get(user_id=user_id)
-            request_user_id = User.objects.get(id=request.data['user_id']).id
-            if user_id != request_user_id:
-                raise ValidationError("Inconsistent Request. Check User ID in URL against request JSON.")
+            patient = Patient.objects.get(user_id=request.data['user_id'])
         except ObjectDoesNotExist as e:
             return Response(e.__str__(), status=400)
         except ValidationError as e:
             return Response(e.__str__(), status=400)
         else:
-            return self.partial_update(request, *args, **kwargs)
+            request.data._mutable = True
+            current_attempt_number = patient.current_attempt_number + 1
+            request.data.update({'current_attempt_number': current_attempt_number})
+            print(request.data)
+            return self.update(request, *args, **kwargs)
 
 
 class PreferencesRetrieveView(RetrieveAPIView):

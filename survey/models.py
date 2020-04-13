@@ -23,12 +23,20 @@ class Survey(models.Model):
         else:
             return False
 
+    def number_of_attempts(self):
+        attempts = 0
+        patients = Patient.objects.all()
+        for patient in patients:
+            attempts += Response.objects.filter(question_id__survey_id=self, patient_id=patient).\
+                        values('attempt_number').distinct().count()
+        return attempts
+
     def number_of_patients_completed(self):
         count = 0
         patients = Patient.objects.all()
         for patient in patients:
             if self.is_completed(patient):
-                count +=1
+                count += 1
         return count
 
 
@@ -55,6 +63,7 @@ class Response(models.Model):
     patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE, default=None)
     question_id = models.ForeignKey(Question, on_delete=models.CASCADE)
     response = models.IntegerField(choices=RESPONSE_OPTIONS)
+    attempt_number = models.IntegerField()
     time_stamp = models.DateTimeField(auto_now_add=True)
 
     def get_response_key(self):
@@ -64,7 +73,7 @@ class Response(models.Model):
         return self.question.survey.name
 
     class Meta:
-        unique_together = ('question_id', 'patient_id')
+        unique_together = ('question_id', 'patient_id', 'attempt_number')
 
 
 class ResponseKey(models.Model):

@@ -8,7 +8,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 
 class ResponseAdmin(admin.ModelAdmin):
-    list_display = ('id', 'survey_id', 'question_id', 'patient_id', 'answer', 'answer_description')
+    list_display = ('id', 'survey_id', 'question_id', 'patient_id', 'answer', 'answer_description', 'attempt_number')
 
     def survey_id(self, obj):
         return obj.question_id.survey_id

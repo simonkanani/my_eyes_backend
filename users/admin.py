@@ -4,7 +4,8 @@ from .models import Patient, Clinician, Preferences
 
 
 class PatientAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'password', 'younger_age_band', 'clinician')
+    list_display = ('id', 'username', 'password', 'younger_age_band', 'clinician', 'part_1_is_active',
+                    'part_2_is_active', 'current_attempt_number')
 
     def clinician(self, obj):
         return obj.clinician_id

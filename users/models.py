@@ -17,6 +17,7 @@ class Patient(models.Model):
     younger_age_band = models.BooleanField()
     part_1_is_active = models.BooleanField(default=True)
     part_2_is_active = models.BooleanField(default=False)
+    current_attempt_number = models.IntegerField(default=1)
 
     def __str__(self):
         return "Patient #" + str(self.user_id)

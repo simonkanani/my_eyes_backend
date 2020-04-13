@@ -3,7 +3,7 @@ from rest_framework.generics import RetrieveAPIView, CreateAPIView, ListAPIView
 from survey.models import Survey, Question, Response
 from survey.serializers import SurveySerializer, QuestionSerializer, ResponseSerializer, PatientSurveySerializer
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.response import Response as r
+from rest_framework.response import Response as RestResponse
 from rest_framework import viewsets
 from users.models import Patient
 from rest_framework.decorators import action
@@ -22,10 +22,10 @@ class QuestionGetView(RetrieveAPIView):
             survey = Survey.objects.get(name=survey_name)
             question = self.queryset.get(survey_id=survey, question_number=question_number)
         except ObjectDoesNotExist:
-            return r("Question does not exist",  status=404)
+            return RestResponse("Question does not exist", status=404)
         else:
             serializer = self.serializer_class(question)
-            return r(serializer.data, status=201)
+            return RestResponse(serializer.data, status=201)
 
 
 class QuestionPostView(CreateAPIView):
@@ -40,11 +40,14 @@ class ResponsePostView(CreateAPIView):
     serializer_class = ResponseSerializer
 
     def post(self, request):
+        patient = Patient.objects.get(user_id=request.data['patient_id'])
+        request.data._mutable = True
+        request.data.update({'attempt_number': patient.current_attempt_number})
         serializer = ResponseSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return r(serializer.data, status=201)
-        return r(serializer.errors, status=400)
+            return RestResponse(serializer.data, status=201)
+        return RestResponse(serializer.errors, status=400)
 
 
 class ResponseGetView(RetrieveAPIView):
@@ -58,10 +61,10 @@ class ResponseGetView(RetrieveAPIView):
             question_id = Question.objects.get(survey_id=survey_id, question_number=question_number)
             response = self.queryset.get(question_id=question_id, patient_id=patient_id)
         except ObjectDoesNotExist as e:
-            return r(e.__str__(), status=404)
+            return RestResponse(e.__str__(), status=404)
         else:
             serializer = self.serializer_class(response)
-            return r(serializer.data, status=201)
+            return RestResponse(serializer.data, status=201)
 
 
 class ResponseListView(ListAPIView):
@@ -81,9 +84,9 @@ class ResponseListView(ListAPIView):
                 raise ObjectDoesNotExist("No results found")
             else:
                 serializer = self.get_serializer(results, many=True)
-                return r(serializer.data, status=200)
+                return RestResponse(serializer.data, status=200)
         except ObjectDoesNotExist as e:
-            return r(e.__str__(), status=404)
+            return RestResponse(e.__str__(), status=404)
 
 
 class SurveyGetView(RetrieveAPIView):
@@ -95,10 +98,10 @@ class SurveyGetView(RetrieveAPIView):
         try:
             survey = self.queryset.get(name=survey_name)
         except ObjectDoesNotExist as e:
-            return r(e.__str__(), status=404)
+            return RestResponse(e.__str__(), status=404)
         else:
             serializer = self.serializer_class(survey)
-            return r(serializer.data, status=201)
+            return RestResponse(serializer.data, status=201)
 
 
 class PatientSurveyGetView(RetrieveAPIView):
@@ -117,13 +120,13 @@ class PatientSurveyGetView(RetrieveAPIView):
                 'answered': survey.responses_submitted(patient)
             }
         except ObjectDoesNotExist as e:
-            return r(e.__str__(), status=404)
+            return RestResponse(e.__str__(), status=404)
         else:
             serializer = self.serializer_class(data=data)
             if serializer.is_valid():
-                return r(serializer.data, status=200)
+                return RestResponse(serializer.data, status=200)
             else:
-                return r(data, status=404)
+                return RestResponse(data, status=404)
 
 
 class QuestionListView(ListAPIView):
@@ -142,9 +145,9 @@ class QuestionListView(ListAPIView):
                 raise ObjectDoesNotExist("No results found")
             else:
                 serializer = self.get_serializer(results, many=True)
-                return r(serializer.data, status=200)
+                return RestResponse(serializer.data, status=200)
         except ObjectDoesNotExist as e:
-            return r(e.__str__(), status=404)
+            return RestResponse(e.__str__(), status=404)
 
 
 

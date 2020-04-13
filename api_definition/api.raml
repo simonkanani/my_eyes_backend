@@ -50,6 +50,9 @@ version: v0.1
                     'password': '12345',
                     'younger_age_band': True,
                     'clinician_id': 0
+                    'part_1_is_active': True,
+                    'part_2_is_active': False,
+                    'current_attempt_number': 1
                     }
             400:
               body:
@@ -58,44 +61,34 @@ version: v0.1
                     {
                       'message': An error has occured!
                     }
-  /list_patients:
+  /search_patients/<str:username>:
     get:
-      description: Lists all patients currently registered on the Application.
+      description: Retrieve details about a single Patient by Username
       responses:
         200:
           body:
             application/json:
               example:
-                [
-                  {
-                    "user_id": 1,
-                    "username": "ABCDE",
-                    "password": "pbkdf2_sha256$180000$o40CJ8Bccr7a$iebL8aV6jfERIVw6zkmahR1OT3Z7lK++UaZh6+A0LHE="
-                    "younger_age_band": True,
-                    "clinician_id": 0,
-                    "part_1_is_active": True,
-                    "part_2_is_active": False,
-                  },
-                  {
-                    "user_id": 2,
-                    "username": "FGHIJ",
-                    "password": "pbkdf2_sha256$180000$o40CJ8Bccr7a$iebL8aV6jfERIVw6zkmahR1OT3Z7lK++UaZh6+A0LHE="
-                    "younger_age_band": False,
-                    "clinician_id": 3,
-                    "part_1_is_active": True,
-                    "part_2_is_active": True,
-                  }
-                ]
-        400:
+                {
+                  "user_id": 1,
+                  "username": "ABCDE",
+                  "password": "pbkdf2_sha256$180000$o40CJ8Bccr7a$iebL8aV6jfERIVw6zkmahR1OT3Z7lK++UaZh6+A0LHE=",
+                  "younger_age_band": True,
+                  "clinician_id": 0,
+                  "part_1_is_active": True,
+                  "part_2_is_active": False,
+                  "current_attempt_number": 2
+                }
+        404:
           body:
             application/json:
               example:
                 {
-                  'message': An error has occured!
+                  'detail': 'Not found.'
                 }
   /int:user_id:
     get:
-      description: Retrieve details about a single Patient
+      description: Retrieve details about a single Patient by User ID
       responses:
         200:
           body:
@@ -109,6 +102,7 @@ version: v0.1
                   "clinician_id": 0,
                   "part_1_is_active": True,
                   "part_2_is_active": False,
+                  "current_attempt_number": 3
                 }
         404:
           body:
@@ -126,10 +120,10 @@ version: v0.1
                 application/json:
                   example:
                     {
-                      "user_id": 0,
-                      "theme": 1,
-                      "haptic": True,
-                      "text_to_speech": False
+                      'user_id': 0,
+                      'theme': 1,
+                      'haptic': True,
+                      'text_to_speech': False
                     }
             404:
               body:
@@ -173,9 +167,9 @@ version: v0.1
                         {
                           'message': Patient matching query does not exist.
                         }
-    /activate:
+  /activate:
       post:
-            description: Manually Activate or Deactivate a Patient's Part 1 or Part 2 Survey permissions
+            description: Manually Activate or Deactivate a Patient's Part 1 or Part 2 Survey permissions. It auto-increments the Patient's current attempt number.
 
             body:
               application/json:
@@ -193,7 +187,8 @@ version: v0.1
                       {
                         'user_id': '0',
                         'part_1_is_active': True,
-                        'part_2_is_active': False
+                        'part_2_is_active': False,
+                        'current_attempt_number': 2
                       }
               400:
                 body:
@@ -221,13 +216,23 @@ version: v0.1
         200:
           body:
             application/json:
-              example:
-                {
-                  'id':0
-                  'username': ABCDE,
-                  'password': 12345,
-                  'user_type': Patient
-                }
+              examples:
+                example1:
+                  {
+                    'id':0,
+                    'username': ABCDE,
+                    'user_type': Clinician
+                  }
+                example2:
+                  {
+                    'id':1,
+                    'username': FGHIJ,
+                    'user_type': Patient,
+                    'younger_age_band': True,
+                    'part_1_is_active': True,
+                    'part_2_is_active': False,
+                    'current_attempt_number': 3
+                  }
         400:
           body:
             application/json:
@@ -326,7 +331,8 @@ version: v0.1
                     'question_number': 2
                     'response': 1,
                     'response_description': "NOT AT ALL TRUE",
-                    'time_stamp': "2020-04-01T12:26:55.412666Z"
+                    'time_stamp': "2020-04-01T12:26:55.412666Z",
+                    'attempt_number': 3
                   }
           404:
             body:
@@ -359,7 +365,8 @@ version: v0.1
                       'question_number': 1,
                       'response': 1,
                       'response_description': "NOT AT ALL TRUE",
-                      'time_stamp': "2020-04-01T12:26:55.412666Z"
+                      'time_stamp': "2020-04-01T12:26:55.412666Z",
+                      'attempt_number': 3
                     },
                     {
                       'patient_id': 2,
@@ -367,7 +374,8 @@ version: v0.1
                       'question_number': 2,
                       'response': 2,
                       'response_description': "A LITTLE BIT TRUE",
-                      'time_stamp': "2020-04-01T12:37:55.412666Z"
+                      'time_stamp': "2020-04-01T12:37:55.412666Z",
+                      "attempt_number": 3
                     }
                   ]
           404:
@@ -402,7 +410,7 @@ version: v0.1
 
   /post_response:
     post:
-      description: Registers a patient to the My Eyes Application.
+      description: Saves a Patients response to a single Question.
       body:
         application/json:
           example:
@@ -410,6 +418,7 @@ version: v0.1
               'patient_id': 1,
               'question_id': 2,
               'response': 3,
+              'attempt_number': 3
             }
       responses:
         200:
@@ -422,7 +431,8 @@ version: v0.1
                   'question_number': 2,
                   'response': 2,
                   'response_description': "A LITTLE BIT TRUE",
-                  'time_stamp': "2020-04-01T12:37:55.412666Z"
+                  'time_stamp': "2020-04-01T12:37:55.412666Z",
+                  'attempt_number': 3
                 }
         400:
           body:
