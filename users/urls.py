@@ -11,5 +11,5 @@ urlpatterns = [
     path('<int:user_id>', views.PatientRetrieveView.as_view()),
     path('<int:user_id>/preferences', views.PreferencesRetrieveView.as_view()),
     path('<int:user_id>/preferences/update', views.PreferencesUpdateView.as_view()),
-    path('activate', views.PatientActivateView.as_view())
+    path('<int:user_id>/activate', views.PatientActivateView.as_view())
 ]

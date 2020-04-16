@@ -41,7 +41,6 @@ class ResponsePostView(CreateAPIView):
 
     def post(self, request):
         patient = Patient.objects.get(user_id=request.data['patient_id'])
-        request.data._mutable = True
         request.data.update({'attempt_number': patient.current_attempt_number})
         serializer = ResponseSerializer(data=request.data)
         if serializer.is_valid():

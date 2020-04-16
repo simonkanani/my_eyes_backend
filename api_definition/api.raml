@@ -167,41 +167,40 @@ version: v0.1
                         {
                           'message': Patient matching query does not exist.
                         }
-  /activate:
-      post:
-            description: Manually Activate or Deactivate a Patient's Part 1 or Part 2 Survey permissions. It auto-increments the Patient's current attempt number.
-
-            body:
-              application/json:
-                example:
-                  {
-                    'user_id': '0',
-                    'part_1_is_active': True,
-                    'part_2_is_active': False
-                  }
-            responses:
-              200:
-                body:
-                  application/json:
-                    example:
-                      {
-                        'user_id': '0',
-                        'part_1_is_active': True,
-                        'part_2_is_active': False,
-                        'current_attempt_number': 2
-                      }
-              400:
-                body:
-                  application/json:
-                    examples:
-                      example1:
+    /activate:
+        post:
+              description: Manually Activate or Deactivate a Patient's Part 1 or Part 2 Survey permissions. It auto-increments the Patient's current attempt number.
+              body:
+                application/json:
+                  example:
+                    {
+                      'part_1_is_active': True,
+                      'part_2_is_active': False,
+                      'increment_attempt': True
+                    }
+              responses:
+                200:
+                  body:
+                    application/json:
+                      example:
                         {
-                          'message': Inconsistent Request. Check User ID in URL against request JSON.
+                          'user_id': '0',
+                          'part_1_is_active': True,
+                          'part_2_is_active': False,
+                          'current_attempt_number': 2
                         }
-                      example2:
-                        {
-                          'message': Patient matching query does not exist.
-                        }
+                400:
+                  body:
+                    application/json:
+                      examples:
+                        example1:
+                          {
+                            'message': Inconsistent Request. Check User ID in URL against request JSON.
+                          }
+                        example2:
+                          {
+                            'message': Patient matching query does not exist.
+                          }
   /login:
     post:
       description: Authenticates User details using Basic Authentication

@@ -96,7 +96,6 @@ class PatientSearchView(RetrieveAPIView):
     lookup_field = 'user_id__username'
 
 
-
 class PatientActivateView(UpdateAPIView):
     """
     Manually Activate or Deactivate a Patient's Part 1 or Part 2 Survey permissions
@@ -107,16 +106,18 @@ class PatientActivateView(UpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         try:
-            patient = Patient.objects.get(user_id=request.data['user_id'])
+            user_id = kwargs['user_id'];
+            patient = Patient.objects.get(user_id=user_id)
         except ObjectDoesNotExist as e:
             return Response(e.__str__(), status=400)
         except ValidationError as e:
             return Response(e.__str__(), status=400)
         else:
-            request.data._mutable = True
-            current_attempt_number = patient.current_attempt_number + 1
+            if request.data['increment_attempt']:
+                current_attempt_number = patient.current_attempt_number + 1
+            else:
+                current_attempt_number = patient.current_attempt_number
             request.data.update({'current_attempt_number': current_attempt_number})
-            print(request.data)
             return self.update(request, *args, **kwargs)
 
 

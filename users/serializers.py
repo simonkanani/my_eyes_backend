@@ -28,9 +28,11 @@ class PatientCreateSerializer(serializers.ModelSerializer):
 
 class PatientActivateSerializer(serializers.ModelSerializer):
 
+    increment_attempt = serializers.BooleanField(default=False)
+
     class Meta:
         model = Patient
-        fields = ['user_id', 'part_1_is_active', 'part_2_is_active', 'current_attempt_number']
+        fields = ['part_1_is_active', 'part_2_is_active', 'increment_attempt', 'current_attempt_number']
 
 
 class UserSerializer(serializers.ModelSerializer):
