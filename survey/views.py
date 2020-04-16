@@ -127,7 +127,7 @@ class PatientSurveyGetView(RetrieveAPIView):
     queryset = Survey.objects.all()
     serializer_class = PatientSurveySerializer
 
-    def get(self, request, patient_id, survey_name):
+    def get(self, request, patient_id, survey_name, attempt_number):
         try:
             survey = Survey.objects.get(name=survey_name)
             patient = Patient.objects.get(user_id=patient_id)
@@ -135,7 +135,7 @@ class PatientSurveyGetView(RetrieveAPIView):
                 'survey_name': survey.name,
                 'patient_id': patient.user_id.id,
                 'number_of_questions': survey.number_of_questions(),
-                'answered': survey.responses_submitted(patient)
+                'answered': survey.responses_submitted(patient, attempt_number)
             }
         except ObjectDoesNotExist as e:
             return RestResponse(e.__str__(), status=404)

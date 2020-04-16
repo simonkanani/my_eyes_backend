@@ -13,8 +13,8 @@ class Survey(models.Model):
     def number_of_questions(self):
         return Question.objects.filter(survey_id=self).count()
 
-    def responses_submitted(self, patient):
-        responses = Response.objects.filter(question_id__survey_id=self, patient_id=patient)
+    def responses_submitted(self, patient, attempt_number):
+        responses = Response.objects.filter(question_id__survey_id=self, patient_id=patient, attempt_number=attempt_number)
         return responses.count()
 
     def is_completed(self, patient):
