@@ -92,7 +92,8 @@ class ResponseListView(ListAPIView):
     def get_queryset(self):
         patient_id = self.kwargs['patient_id']
         survey_name = self.kwargs['survey_name']
-        return self.queryset.filter(patient_id__user_id_id=patient_id, question_id__survey_id__name=survey_name)
+        attempt_number = self.kwargs['attempt_number']
+        return self.queryset.filter(patient_id__user_id_id=patient_id, question_id__survey_id__name=survey_name, attempt_number=attempt_number)
 
     def list(self, *args, **kwargs):
         try:
