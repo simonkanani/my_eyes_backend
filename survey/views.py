@@ -1,12 +1,10 @@
 from django.shortcuts import render
-from rest_framework.generics import RetrieveAPIView, CreateAPIView, ListAPIView
+from rest_framework.generics import RetrieveAPIView, CreateAPIView, ListAPIView, UpdateAPIView
 from survey.models import Survey, Question, Response
 from survey.serializers import SurveySerializer, QuestionSerializer, ResponseSerializer, PatientSurveySerializer
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from rest_framework.response import Response as RestResponse
-from rest_framework import viewsets
 from users.models import Patient
-from rest_framework.decorators import action
 
 # Create your views here.
 
@@ -47,6 +45,26 @@ class ResponsePostView(CreateAPIView):
             serializer.save()
             return RestResponse(serializer.data, status=201)
         return RestResponse(serializer.errors, status=400)
+
+
+class ResponseUpdateView(UpdateAPIView):
+    """Update a previously provided answer"""
+    queryset = Response.objects.all()
+    serializer_class = ResponseSerializer
+
+    def get_object(self):
+        return self.queryset.get(id=self.kwargs['id'])
+
+    def put(self, request, *args, **kwargs):
+        try:
+            self.kwargs['id'] = request.data['id']
+            self.queryset.get(id=self.kwargs['id'])
+        except ObjectDoesNotExist as e:
+            return RestResponse(e.__str__(), status=400)
+        except ValidationError as e:
+            return RestResponse(e.__str__(), status=400)
+        else:
+            return self.update(request, *args, **kwargs)
 
 
 class ResponseGetView(RetrieveAPIView):

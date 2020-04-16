@@ -64,7 +64,7 @@ class Response(models.Model):
     question_id = models.ForeignKey(Question, on_delete=models.CASCADE)
     response = models.IntegerField(choices=RESPONSE_OPTIONS)
     attempt_number = models.IntegerField()
-    time_stamp = models.DateTimeField(auto_now_add=True)
+    time_stamp = models.DateTimeField(auto_now=True)
 
     def get_response_key(self):
         return ResponseKey.objects.get(survey_id=self.question_id.survey_id, response=self.response).get_response_key_display()

@@ -10,7 +10,7 @@ urlpatterns = [
     path('<int:patient_id>/<str:survey_name>/<int:question_number>', views.ResponseGetView.as_view()),
     path('<int:patient_id>/<str:survey_name>/all', views.ResponseListView.as_view()),
     path('post_question', views.QuestionPostView.as_view()),
-    path('post_response', views.ResponsePostView.as_view())
-
+    path('post_response', views.ResponsePostView.as_view()),
+    path('update_response', views.ResponseUpdateView.as_view())
 ]
 

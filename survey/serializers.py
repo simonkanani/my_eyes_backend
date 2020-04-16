@@ -21,6 +21,7 @@ class ResponseSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        data['id'] = instance.id
         data['response_description'] = instance.get_response_key()
         data['time_stamp'] = instance.time_stamp
         data['survey'] = instance.question_id.survey_id.name

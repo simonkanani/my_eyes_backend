@@ -106,7 +106,7 @@ class PatientActivateView(UpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         try:
-            user_id = kwargs['user_id'];
+            user_id = kwargs['user_id']
             patient = Patient.objects.get(user_id=user_id)
         except ObjectDoesNotExist as e:
             return Response(e.__str__(), status=400)
