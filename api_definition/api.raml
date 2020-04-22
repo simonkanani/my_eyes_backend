@@ -61,7 +61,7 @@ version: v0.1
                     {
                       'message': An error has occured!
                     }
-  /search_patients/<str:username>:
+  /search_patients/str:username:
     get:
       description: Retrieve details about a single Patient by Username
       responses:
@@ -140,7 +140,7 @@ version: v0.1
                 example:
                   {
                     'user_id': '0',
-                    'Themes': 1,
+                    'theme': 1,
                     'haptic': True,
                     'text_to_speech': False
                   }
@@ -151,7 +151,7 @@ version: v0.1
                     example:
                       {
                         'user_id': '0',
-                        'Themes': 1,
+                        'theme': 1,
                         'haptic': True,
                         'text_to_speech': False
                       }
@@ -168,7 +168,7 @@ version: v0.1
                           'message': Patient matching query does not exist.
                         }
     /activate:
-        post:
+        put:
               description: Manually Activate or Deactivate a Patient's Part 1 or Part 2 Survey permissions. It auto-increments the Patient's current attempt number.
               body:
                 application/json:
@@ -349,64 +349,63 @@ version: v0.1
                           {
                             'message': Question matching query does not exist.
                           }
-    /all:
-      get:
-        description: Lists a Patient's response to all Questions within a Survey
-        responses:
-          200:
-            body:
-              application/json:
-                example:
-                  [
+    /int:attempt_number:
+      /all:
+        get:
+          description: Lists a Patient's response to all Questions within a Survey
+          responses:
+            200:
+              body:
+                application/json:
+                  example:
+                    [
+                      {
+                        'patient_id': 2,
+                        'survey': VQoL_C,
+                        'question_number': 1,
+                        'response': 1,
+                        'response_description': "NOT AT ALL TRUE",
+                        'time_stamp': "2020-04-01T12:26:55.412666Z",
+                        'attempt_number': 3
+                      },
+                      {
+                        'patient_id': 2,
+                        'survey': VQoL_C,
+                        'question_number': 2,
+                        'response': 2,
+                        'response_description': "A LITTLE BIT TRUE",
+                        'time_stamp': "2020-04-01T12:37:55.412666Z",
+                        "attempt_number": 3
+                      }
+                    ]
+            404:
+              body:
+                application/json:
+                  example:
                     {
-                      'patient_id': 2,
-                      'survey': VQoL_C,
-                      'question_number': 1,
-                      'response': 1,
-                      'response_description': "NOT AT ALL TRUE",
-                      'time_stamp': "2020-04-01T12:26:55.412666Z",
-                      'attempt_number': 3
-                    },
-                    {
-                      'patient_id': 2,
-                      'survey': VQoL_C,
-                      'question_number': 2,
-                      'response': 2,
-                      'response_description': "A LITTLE BIT TRUE",
-                      'time_stamp': "2020-04-01T12:37:55.412666Z",
-                      "attempt_number": 3
+                      'message': No results found
                     }
-                  ]
-          404:
-            body:
-              application/json:
-                example:
-                  {
-                    'message': No results found
-                  }
-    /summarize:
-      get:
-        description: Returns details for a single Survey for a single Patient
-        responses:
-          200:
-            body:
-              application/json:
-                example:
-                  {
-                    "survey_name": "Survey_Name",
-                    "patient_id": 0,
-                    "number_of_questions": 30,
-                    "answered": 10
-                  }
-          404:
-            body:
-              application/json:
-                example:
-                  {
-                    'message': Survey matching query does not exist
-                  }
-
-
+      /summarize:
+        get:
+          description: Returns details for a single Survey for a single Patient
+          responses:
+            200:
+              body:
+                application/json:
+                  example:
+                    {
+                      "survey_name": "Survey_Name",
+                      "patient_id": 0,
+                      "number_of_questions": 30,
+                      "answered": 10
+                    }
+            404:
+              body:
+                application/json:
+                  example:
+                    {
+                      'message': Survey matching query does not exist
+                    }
   /post_response:
     post:
       description: Saves a Patients response to a single Question.
@@ -440,8 +439,48 @@ version: v0.1
                 {
                   "non_field_errors":
                     [
-                      "The fields question_id, patient_id must make a unique set."
+                      "The fields question_id, patient_id, attempt_number must make a unique set."
                     ]
                 }
+
+  /update_response:
+    put:
+      description: Update a previously provided answer
+      body:
+        application/json:
+          example:
+            {
+              'id': 23,
+              'patient_id': 1,
+              'question_id': 2,
+              'response': 3,
+              'attempt_number': 3
+            }
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  'patient_id': 2,
+                  'survey': VQoL_C,
+                  'question_number': 2,
+                  'response': 2,
+                  'response_description': "A LITTLE BIT TRUE",
+                  'time_stamp': "2020-04-01T12:37:55.412666Z",
+                  'attempt_number': 3
+                }
+        400:
+          body:
+            application/json:
+              example:
+                {
+                  "non_field_errors":
+                    [
+                      "Error"
+                    ]
+                }
+
+
 
 

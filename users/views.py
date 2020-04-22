@@ -46,10 +46,9 @@ class PatientSaveView(CreateAPIView):
                 user_id = self.__generate_user(request)
                 response = self.__generate_patient(request, user_id)
                 self.__generate_preferences(response)
-
         except Exception as e:
             response = Response(e.__str__(), status=400)
-        else:
+        finally:
             return response
 
     def __generate_user(self, request):
@@ -62,7 +61,6 @@ class PatientSaveView(CreateAPIView):
         return user.id
 
     def __generate_patient(self, request, user_id):
-        request.data._mutable = True
         request.data.update({'user_id': user_id})
         serializer = PatientSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

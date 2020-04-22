@@ -28,10 +28,16 @@ class Patient(models.Model):
     def password(self):
         return self.user_id.password
 
-
 class Preferences(models.Model):
+
+    THEME_OPTIONS = [
+        ('DEFAULT', 'DEFAULT'),
+        ('AUTUMN', 'AUTUMN'),
+        ('DARK', 'DARK'),
+        ('NEON', 'NEON'),
+    ]
     user_id = models.OneToOneField(Patient, on_delete=models.CASCADE)
-    theme = models.IntegerField(default=0)
+    theme = models.CharField(choices=THEME_OPTIONS, default='DEFAULT', max_length=7)
     haptic = models.BooleanField(default=True)
     text_to_speech = models.BooleanField(default=True)
 
