@@ -52,3 +52,6 @@ class PatientSurveySerializer(serializers.Serializer):
     number_of_questions = serializers.IntegerField()
     answered = serializers.IntegerField()
 
+
+class SurveyScoreSerializer(serializers.Serializer):
+    pass

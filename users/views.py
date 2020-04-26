@@ -5,9 +5,11 @@ import json, random, string
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, GenericAPIView, UpdateAPIView
 from users.serializers import *
 from django.db import transaction
-from rest_framework.response import Response
+from rest_framework.response import Response as RestResponse
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse, JsonResponse
+from survey.models import Survey, Question, Response
+import datetime
 
 
 class PatientGenerateView(GenericAPIView):
@@ -29,9 +31,9 @@ class PatientGenerateView(GenericAPIView):
             serializer = PatientGeneratorSerializer(data=data)
             serializer.is_valid(raise_exception=True)
 
-            return Response(serializer.data, status=201)
+            return RestResponse(serializer.data, status=201)
         except Exception as e:
-            return Response(e.__str__(), status=400)
+            return RestResponse(e.__str__(), status=400)
 
 
 class PatientSaveView(CreateAPIView):
@@ -47,7 +49,7 @@ class PatientSaveView(CreateAPIView):
                 response = self.__generate_patient(request, user_id)
                 self.__generate_preferences(response)
         except Exception as e:
-            response = Response(e.__str__(), status=400)
+            response = RestResponse(e.__str__(), status=400)
         finally:
             return response
 
@@ -66,7 +68,7 @@ class PatientSaveView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.object = serializer.save()
         headers = self.get_success_headers(serializer.data)
-        return Response(request.data, status=201,  headers=headers)
+        return RestResponse(request.data, status=201,  headers=headers)
 
     def __generate_preferences(self, response):
         patient = Patient.objects.get(user_id=response.data.get('user_id'))
@@ -91,7 +93,40 @@ class PatientSearchView(RetrieveAPIView):
 
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
-    lookup_field = 'user_id__username'
+
+    def get(self, request, *args, **kwargs):
+        try:
+           username = kwargs['username']
+           patient = Patient.objects.get(user_id__username=username)
+        except ObjectDoesNotExist as e:
+            return RestResponse(e.__str__(), status=404)
+        else:
+            serializer = self.serializer_class(patient)
+            response = serializer.data
+            response['attempts'], response['time_taken'] = self.count_attempts_and_time_taken(patient)
+            return RestResponse(response, status=200)
+
+    @staticmethod
+    def count_attempts_and_time_taken(patient):
+        attempts = {}
+        time_taken = {}
+        if patient.younger_age_band:
+            surveys = [Survey.objects.get(name='FVQ_C'), Survey.objects.get(name='VQoL_C')]
+        else:
+            surveys = [Survey.objects.get(name='FVQ_YP'), Survey.objects.get(name='VQoL_YP')]
+        for survey in surveys:
+            time_taken[survey.name] = []
+            count = 0
+            for i in range(1, patient.current_attempt_number+1):
+                if survey.is_completed(patient, i):
+                    time_taken[survey.name].append(survey.time_taken(patient, i))
+                    count += 1
+            if time_taken[survey.name]:
+                time_taken[survey.name] = sum(time_taken[survey.name], datetime.timedelta(0)) / len(time_taken[survey.name])
+            else:
+                time_taken[survey.name] = 0
+            attempts[survey.name] = count
+        return attempts, time_taken
 
 
 class PatientActivateView(UpdateAPIView):
@@ -107,9 +142,9 @@ class PatientActivateView(UpdateAPIView):
             user_id = kwargs['user_id']
             patient = Patient.objects.get(user_id=user_id)
         except ObjectDoesNotExist as e:
-            return Response(e.__str__(), status=400)
+            return RestResponse(e.__str__(), status=400)
         except ValidationError as e:
-            return Response(e.__str__(), status=400)
+            return RestResponse(e.__str__(), status=400)
         else:
             if request.data['increment_attempt']:
                 current_attempt_number = patient.current_attempt_number + 1
@@ -144,9 +179,9 @@ class PreferencesUpdateView(UpdateAPIView):
             if user_id != request_user_id:
                 raise ValidationError("Inconsistent Request. Check User ID in URL against request JSON.")
         except ObjectDoesNotExist as e:
-            return Response(e.__str__(), status=400)
+            return RestResponse(e.__str__(), status=400)
         except ValidationError as e:
-            return Response(e.__str__(), status=400)
+            return RestResponse(e.__str__(), status=400)
         else:
             return self.update(request, *args, **kwargs)
 

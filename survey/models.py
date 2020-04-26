@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import Patient
+from django.db.models import Min, Max
 
 # Create your models here.
 
@@ -17,8 +18,8 @@ class Survey(models.Model):
         responses = Response.objects.filter(question_id__survey_id=self, patient_id=patient, attempt_number=attempt_number)
         return responses.count()
 
-    def is_completed(self, patient):
-        if self.number_of_questions() == self.responses_submitted(patient):
+    def is_completed(self, patient, attempt_number):
+        if self.number_of_questions() == self.responses_submitted(patient, attempt_number):
             return True
         else:
             return False
@@ -38,6 +39,11 @@ class Survey(models.Model):
             if self.is_completed(patient):
                 count += 1
         return count
+
+    def time_taken(self, patient, attempt_number):
+        started = list(Response.objects.filter(question_id__survey_id=self, patient_id=patient, attempt_number=attempt_number).aggregate(Min('time_stamp')).values())[0]
+        ended = list(Response.objects.filter(question_id__survey_id=self, patient_id=patient, attempt_number=attempt_number).aggregate(Max('time_stamp')).values())[0]
+        return ended-started
 
 
 class Question(models.Model):
