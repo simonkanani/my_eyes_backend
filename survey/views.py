@@ -5,6 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from rest_framework.response import Response as RestResponse
 from users.models import Patient
 import datetime
+import csv
+from django.http import HttpResponse
 
 
 # Create your views here.
@@ -193,15 +195,15 @@ class GetScores(RetrieveAPIView):
             current_attempt_number = patient.current_attempt_number
             scores = {survey_1_name: [], survey_2_name: []}
             for attempt_number in range(current_attempt_number):
-                if survey_1.is_completed(patient, attempt_number+1):
+                if survey_1.is_completed(patient, attempt_number + 1):
                     responses = self.queryset.filter(patient_id__user_id_id=patient_id,
                                                      question_id__survey_id__name=survey_1_name,
-                                                     attempt_number=attempt_number+1)
+                                                     attempt_number=attempt_number + 1)
                     scores[survey_1_name].append(self.calculate_score(responses, survey_1_name))
-                if survey_2.is_completed(patient, attempt_number+1):
+                if survey_2.is_completed(patient, attempt_number + 1):
                     responses = self.queryset.filter(patient_id__user_id_id=patient_id,
                                                      question_id__survey_id__name=survey_2_name,
-                                                     attempt_number=attempt_number+1)
+                                                     attempt_number=attempt_number + 1)
                     scores[survey_2_name].append(self.calculate_score(responses, survey_2_name))
             if len(scores[survey_1_name]) > 0:
                 return RestResponse(scores, status=200)
@@ -428,11 +430,11 @@ class GetScores(RetrieveAPIView):
                 for response in responses:
                     num = response.question_id.question_number
                     if num == 8 or num == 9 or num == 15 or num == 17 or num == 20:
-                        if response.response-1 == 2:
+                        if response.response - 1 == 2:
                             summary_score += 1
-                        if response.response-1 == 1:
+                        if response.response - 1 == 1:
                             summary_score += 2
-                        if response.response-1 == 0:
+                        if response.response - 1 == 0:
                             summary_score += 3
                     else:
                         summary_score += response.response - 1
@@ -510,11 +512,11 @@ class GetScores(RetrieveAPIView):
                 for response in responses:
                     num = response.question_id.question_number
                     if num == 3 or num == 7 or num == 8 or num == 15 or num == 16 or num == 18 or num == 20:
-                        if response.response-1 == 2:
+                        if response.response - 1 == 2:
                             summary_score += 1
-                        if response.response-1 == 1:
+                        if response.response - 1 == 1:
                             summary_score += 2
-                        if response.response-1 == 0:
+                        if response.response - 1 == 0:
                             summary_score += 3
                     else:
                         summary_score += response.response - 1
@@ -587,6 +589,7 @@ class GetScores(RetrieveAPIView):
 
 class GetSummaryData(RetrieveAPIView):
     """Returns Summary Usage Data of Server"""
+
     def get(self, request):
         response = {'registered': self.registered(),
                     'attempts': self.count_attempts_and_time_taken()[0],
@@ -601,12 +604,13 @@ class GetSummaryData(RetrieveAPIView):
             time_taken[survey.name] = []
             count = 0
             for patient in Patient.objects.all():
-                for i in range(1, patient.current_attempt_number+1):
+                for i in range(1, patient.current_attempt_number + 1):
                     if survey.is_completed(patient, i):
                         time_taken[survey.name].append(survey.time_taken(patient, i))
                         count += 1
             if time_taken[survey.name]:
-                time_taken[survey.name] = sum(time_taken[survey.name], datetime.timedelta(0)) / len(time_taken[survey.name])
+                time_taken[survey.name] = sum(time_taken[survey.name], datetime.timedelta(0)) / len(
+                    time_taken[survey.name])
             else:
                 time_taken[survey.name] = 0
             attempts[survey.name] = count
@@ -618,7 +622,9 @@ class GetSummaryData(RetrieveAPIView):
         now = datetime.datetime.now()
         first_of_month = datetime.datetime(now.year, now.month, 1)
         registered['Child'] = Patient.objects.filter(younger_age_band=True).count()
-        registered['Child_new'] = Patient.objects.filter(younger_age_band=True, user_id__date_joined__range=(first_of_month, now)).count()
+        registered['Child_new'] = Patient.objects.filter(younger_age_band=True,
+                                                         user_id__date_joined__range=(first_of_month, now)).count()
         registered['Young_Person'] = Patient.objects.filter(younger_age_band=False).count()
-        registered['Young_Person_new'] = Patient.objects.filter(younger_age_band=False, user_id__date_joined__range=(first_of_month, now)).count()
+        registered['Young_Person_new'] = Patient.objects.filter(younger_age_band=False, user_id__date_joined__range=(
+            first_of_month, now)).count()
         return registered

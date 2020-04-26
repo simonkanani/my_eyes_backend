@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from rest_framework import routers
 
 urlpatterns = [
     path('<str:survey_name>/summarize', views.SurveyGetView.as_view()),
@@ -13,6 +12,6 @@ urlpatterns = [
     path('usage_data', views.GetSummaryData.as_view()),
     path('post_question', views.QuestionPostView.as_view()),
     path('post_response', views.ResponsePostView.as_view()),
-    path('update_response', views.ResponseUpdateView.as_view())
+    path('update_response', views.ResponseUpdateView.as_view()),
 ]
 
