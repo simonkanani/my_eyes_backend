@@ -507,7 +507,10 @@ class GetScores(RetrieveAPIView):
                     65: 88.98,
                     66: 100.00,
                 }
-                score = scoring_table[summary_score]
+                try:
+                    score = scoring_table[summary_score]
+                except Exception as e:
+                    score = "ERROR" + str(summary_score)
             else:
                 for response in responses:
                     num = response.question_id.question_number
