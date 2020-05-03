@@ -106,10 +106,18 @@ class PatientAdmin(admin.ModelAdmin):
         return {fvq: sum(FVQ_scores) / len(FVQ_scores),
                 fvq + '_max': max(FVQ_scores),
                 fvq + '_min': min(FVQ_scores),
-                vqol: sum(VQoL_scores) / len(VQoL_scores),
-                vqol + '_max': max(VQoL_scores),
-                vqol + '_min': min(VQoL_scores)
+                vqol: VQoL_scores,
+                vqol + '_max': 0,
+                vqol + '_min': 1
                 }
+
+        # return {fvq: sum(FVQ_scores) / len(FVQ_scores),
+        #         fvq + '_max': max(FVQ_scores),
+        #         fvq + '_min': min(FVQ_scores),
+        #         vqol: sum(VQoL_scores) / len(VQoL_scores),
+        #         vqol + '_max': max(VQoL_scores),
+        #         vqol + '_min': min(VQoL_scores)
+        #         }
 
     def export_survey_data(self, request, queryset):
         # Create the HttpResponse object with the appropriate CSV header.
