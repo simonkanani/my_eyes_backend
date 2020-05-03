@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from .models import Patient, Clinician, Preferences
 from survey.models import Survey, Question, Response
 from django.http import HttpResponse
