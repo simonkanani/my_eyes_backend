@@ -61,7 +61,7 @@ class PatientAdmin(admin.ModelAdmin):
                 attempts[fvq],
                 scores[fvq], scores[fvq + '_max'], scores[fvq + '_min'], str(time_taken[fvq]), attempts[vqol],
                 scores[vqol],
-                scores[vqol + '_min'], scores[vqol + '_min'], time_taken[fvq], preferences.theme, preferences.haptic,
+                scores[vqol + '_max'], scores[vqol + '_min'], time_taken[fvq], preferences.theme, preferences.haptic,
                 preferences.text_to_speech]
 
     def count_attempts_and_time_taken(self, patient):
@@ -99,25 +99,40 @@ class PatientAdmin(admin.ModelAdmin):
         FVQ_scores = []
         VQoL_scores = []
         for attempt in range(1, patient.current_attempt_number + 1):
-            responses = all_responses.filter(attempt_number=attempt)
-            FVQ_scores.append(GetScores.calculate_score(responses, fvq))
-            VQoL_scores.append(GetScores.calculate_score(responses, vqol))
+            fvq_survey = Survey.objects.get(name=fvq)
+            vqol_survey = Survey.objects.get(name=vqol)
+            if fvq_survey.is_completed(patient, attempt):
+                responses = all_responses.filter(attempt_number=attempt, question_id__survey_id__name=fvq)
+                FVQ_scores.append(GetScores.calculate_score(responses, fvq))
+            if vqol_survey.is_completed(patient, attempt):
+                responses = all_responses.filter(attempt_number=attempt, question_id__survey_id__name=fvq)
+                VQoL_scores.append(GetScores.calculate_score(responses, vqol))
+            if FVQ_scores:
+                fvq_av = sum(FVQ_scores) / len(FVQ_scores)
+                fvq_max = max(FVQ_scores)
+                fvq_min = min(FVQ_scores)
+            else:
+                fvq_av = 0
+                fvq_max = 0
+                fvq_min = 0
 
-        return {fvq: sum(FVQ_scores) / len(FVQ_scores),
-                fvq + '_max': max(FVQ_scores),
-                fvq + '_min': min(FVQ_scores),
-                vqol: VQoL_scores,
-                vqol + '_max': 0,
-                vqol + '_min': 1
+            if VQoL_scores:
+                vqol_av = sum(VQoL_scores) / len(VQoL_scores)
+                vqol_max = max(VQoL_scores)
+                vqol_min = min(VQoL_scores)
+            else:
+                vqol_av = 'NA'
+                vqol_max = 'NA'
+                vqol_min = 'NA'
+
+        return {fvq: fvq_av,
+                fvq + '_max': fvq_max,
+                fvq + '_min': fvq_min,
+                vqol: vqol_av,
+                vqol + '_max': vqol_max,
+                vqol + '_min': vqol_min
                 }
 
-        # return {fvq: sum(FVQ_scores) / len(FVQ_scores),
-        #         fvq + '_max': max(FVQ_scores),
-        #         fvq + '_min': min(FVQ_scores),
-        #         vqol: sum(VQoL_scores) / len(VQoL_scores),
-        #         vqol + '_max': max(VQoL_scores),
-        #         vqol + '_min': min(VQoL_scores)
-        #         }
 
     def export_survey_data(self, request, queryset):
         # Create the HttpResponse object with the appropriate CSV header.

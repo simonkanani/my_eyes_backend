@@ -425,7 +425,6 @@ class GetScores(RetrieveAPIView):
                 }
             score = scoring_table[summary_score]
         else:
-
             if '_YP' in survey_name:
                 for response in responses:
                     num = response.question_id.question_number
