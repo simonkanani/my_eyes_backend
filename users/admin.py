@@ -61,7 +61,7 @@ class PatientAdmin(admin.ModelAdmin):
                 attempts[fvq],
                 scores[fvq], scores[fvq + '_max'], scores[fvq + '_min'], str(time_taken[fvq]), attempts[vqol],
                 scores[vqol],
-                scores[vqol + '_max'], scores[vqol + '_min'], time_taken[fvq], preferences.theme, preferences.haptic,
+                scores[vqol + '_max'], scores[vqol + '_min'], time_taken[vqol], preferences.theme, preferences.haptic,
                 preferences.text_to_speech]
 
     def count_attempts_and_time_taken(self, patient):
@@ -105,16 +105,16 @@ class PatientAdmin(admin.ModelAdmin):
                 responses = all_responses.filter(attempt_number=attempt, question_id__survey_id__name=fvq)
                 FVQ_scores.append(GetScores.calculate_score(responses, fvq))
             if vqol_survey.is_completed(patient, attempt):
-                responses = all_responses.filter(attempt_number=attempt, question_id__survey_id__name=fvq)
+                responses = all_responses.filter(attempt_number=attempt, question_id__survey_id__name=vqol)
                 VQoL_scores.append(GetScores.calculate_score(responses, vqol))
             if FVQ_scores:
                 fvq_av = sum(FVQ_scores) / len(FVQ_scores)
                 fvq_max = max(FVQ_scores)
                 fvq_min = min(FVQ_scores)
             else:
-                fvq_av = 0
-                fvq_max = 0
-                fvq_min = 0
+                fvq_av = 'NA'
+                fvq_max = 'NA'
+                fvq_min = 'NA'
 
             if VQoL_scores:
                 vqol_av = sum(VQoL_scores) / len(VQoL_scores)
@@ -133,7 +133,6 @@ class PatientAdmin(admin.ModelAdmin):
                 vqol + '_min': vqol_min
                 }
 
-
     def export_survey_data(self, request, queryset):
         # Create the HttpResponse object with the appropriate CSV header.
         response = HttpResponse(content_type='text/csv')
@@ -141,8 +140,8 @@ class PatientAdmin(admin.ModelAdmin):
 
         # The data is hard-coded here, but you could load it from a database or
         # some other source.
-        max_q_num = Response.objects.all().aggregate(Max('question_id__question_number'))[
-            'question_id__question_number__max']
+        max_q_num = Question.objects.all().aggregate(Max('question_number'))[
+            'question_number__max']
         writer = csv.writer(response)
         header = ['User ID', 'Username', 'Age_Band', 'Date_Registered', 'Clinician', 'Survey_Name', 'Attempt', 'Score',
                   'Date_Completed', 'Time_Taken']
