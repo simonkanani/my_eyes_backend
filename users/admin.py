@@ -104,6 +104,11 @@ class PatientAdmin(admin.ModelAdmin):
             FVQ_scores.append(GetScores.calculate_score(responses, fvq))
             VQoL_scores.append(GetScores.calculate_score(responses, vqol))
 
+            print(patient.user_id.username, "FVQ_Scores:")
+            print(FVQ_scores)
+            print(patient.user_id.username, "VQoL_Scores:")
+            print(VQoL_scores)
+
         return {fvq: sum(FVQ_scores) / len(FVQ_scores),
                 fvq + '_max': max(FVQ_scores),
                 fvq + '_min': min(FVQ_scores),
